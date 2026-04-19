@@ -9,7 +9,7 @@ void StartGameButton_Create(void *objPtr)
     switch (Engine.globalBoxRegion) {
         case REGION_JP:
             package        = LoadTexture("Data/Game/Models/Package_JP.png", TEXFMT_RGBA5551);
-            self->meshCart = LoadMesh("Data/Game/Models/JPCartridge.bin", package);
+            self->meshCart = LoadMesh("Data/Game/Models/JPCartridge.bin", LoadTexture("Data/Game/Models/SonicCD.png", TEXFMT_RGBA5551));
             break;
 
         case REGION_US:
@@ -46,7 +46,7 @@ void StartGameButton_Main(void *objPtr)
         switch (Engine.globalBoxRegion) {
             case REGION_JP:
                 package        = LoadTexture("Data/Game/Models/Package_JP.png", TEXFMT_RGBA5551);
-                self->meshCart = LoadMesh("Data/Game/Models/JPCartridge.bin", package);
+                self->meshCart = LoadMesh("Data/Game/Models/JPCartridge.bin", LoadTexture("Data/Game/Models/SonicCD.png", TEXFMT_RGBA5551));
                 break;
             case REGION_US:
                 package        = LoadTexture("Data/Game/Models/Package_US.png", TEXFMT_RGBA5551);
