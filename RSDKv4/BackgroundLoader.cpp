@@ -98,16 +98,6 @@ static bool ThreadedResolvePath(char *dest, const char *filePath, int *packID, i
     if (preloadMutexCreated) sys_lwmutex_unlock(&preloadMutex);
     if (abortPreload) return false;
 
-    if (forceUseScripts && !forceFolder) {
-        if (strncasecmp(filePathBuf, "Data/Scripts/", 13) == 0 && (strcasestr(filePathBuf, ".txt"))) {
-            forceFolder = true;
-            char scriptPath[0x100];
-            strncpy(scriptPath, filePathBuf + 5, 0xFF); // Skip "Data/"
-            scriptPath[0xFF] = 0;
-    for (int i = 0; scriptPath[i]; i++) if (scriptPath[i] == '\\') scriptPath[i] = '/';
-            strncpy(filePathBuf, scriptPath, 0xFF);
-        }
-    }
 #endif
 
     int fileIndex = -1;

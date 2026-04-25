@@ -12,9 +12,6 @@ void MenuControl_Create(void *objPtr)
     self->buttonFlags[self->buttonCount] = BUTTON_STARTGAME;
     self->buttonCount++;
 
-    self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(TimeAttackButton);
-    self->buttonFlags[self->buttonCount] = BUTTON_TIMEATTACK;
-    self->buttonCount++;
 
 
     self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(OptionsButton);
