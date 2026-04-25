@@ -297,19 +297,7 @@ void TimeAttack_Create(void *objPtr)
     MatrixMultiplyF(&self->labelPtr->renderMatrix, &self->matrixTemp);
     self->labelPtr->useRenderMatrix = true;
 
-    self->button          = CREATE_ENTITY(SubMenuButton);
-    self->button->matXOff = 512.0;
-    self->button->textY   = -4.0;
-    self->button->matZ    = 0.0;
-    self->button->scale   = 0.1;
-
-    self->buttonRotationY = DegreesToRad(16.0);
-    MatrixRotateYF(&self->button->matrix, self->buttonRotationY);
-    MatrixTranslateXYZF(&self->matrixTemp, -128.0, 48.0, 160.0);
-    MatrixMultiplyF(&self->button->matrix, &self->matrixTemp);
-    self->button->useMatrix = true;
-    SetStringToFont(self->button->text, strTotalTime, FONT_LABEL);
-    AddTimeStringToFont(self->button->text, self->totalTime, FONT_LABEL);
+    self->button = NULL;
 
     self->textureArrows = LoadTexture("Data/Game/Menu/ArrowButtons.png", TEXFMT_RGBA4444);
     self->pagePrevAlpha = 0;
@@ -334,7 +322,8 @@ void TimeAttack_Main(void *objPtr)
             self->labelPtr->alignOffset /= (1.125 * (60.0 * Engine.deltaTime));
             self->timer += (Engine.deltaTime + Engine.deltaTime);
             self->labelPtr->alpha = (self->timer * 256.0);
-            self->button->matXOff += ((-176.0 - self->button->matXOff) / ((60.0 * Engine.deltaTime) * 16.0));
+            if (self->button)
+                self->button->matXOff += ((-176.0 - self->button->matXOff) / ((60.0 * Engine.deltaTime) * 16.0));
             self->y += ((-36.0 - self->y) / ((60.0 * Engine.deltaTime) * 8.0));
             MatrixRotateXYZF(&self->matRender, 0.0, DegreesToRad(12.25), DegreesToRad(6.125));
             MatrixTranslateXYZF(&self->matrixTemp, 0.0, self->y, 80.0);
@@ -582,7 +571,7 @@ void TimeAttack_Main(void *objPtr)
                 MatrixMultiplyF(&self->labelPtr->renderMatrix, &self->matrixTemp);
             }
 
-            if (self->buttonRotationY > self->targetButtonRotationY) {
+            if (self->button && self->buttonRotationY > self->targetButtonRotationY) {
                 self->buttonRotationYVelocity -= (0.0025 * (60.0 * Engine.deltaTime));
                 if (self->buttonRotationYVelocity < 0.0)
                     self->buttonRotationY += ((60.0 * Engine.deltaTime) * self->buttonRotationYVelocity);
@@ -632,7 +621,7 @@ void TimeAttack_Main(void *objPtr)
             MatrixTranslateXYZF(&self->matrixTemp, 0.0, self->y, 80.0);
             MatrixMultiplyF(&self->matRender, &self->matrixTemp);
 
-            if (self->targetButtonRotationY > self->buttonRotationY) {
+            if (self->button && self->targetButtonRotationY > self->buttonRotationY) {
                 self->buttonRotationYVelocity += (0.0025 * (60.0 * Engine.deltaTime));
                 if (self->buttonRotationYVelocity > 0.0) {
                     self->buttonRotationY += ((60.0 * Engine.deltaTime) * self->buttonRotationYVelocity);
@@ -667,7 +656,8 @@ void TimeAttack_Main(void *objPtr)
 
             self->timer += (Engine.deltaTime + Engine.deltaTime);
             self->labelPtr->alignOffset = (10.0 * (60.0 * Engine.deltaTime)) + self->labelPtr->alignOffset;
-            self->button->matXOff += (12.0 * (60.0 * Engine.deltaTime));
+            if (self->button)
+                self->button->matXOff += (12.0 * (60.0 * Engine.deltaTime));
             self->y += ((-512.0 - self->y) / ((60.0 * Engine.deltaTime) * 16.0));
 
             MatrixRotateXYZF(&self->matRender, 0.0, DegreesToRad(12.25), DegreesToRad(6.125));
@@ -675,7 +665,8 @@ void TimeAttack_Main(void *objPtr)
             MatrixMultiplyF(&self->matRender, &self->matrixTemp);
             if (self->timer > 1.0) {
                 self->timer = 0.0;
-                RemoveNativeObject(self->button);
+                if (self->button)
+                    RemoveNativeObject(self->button);
                 RemoveNativeObject(self->labelPtr);
                 for (int i = 0; i < (timeAttack_ZoneCount + timeAttack_ExZoneCount); ++i) RemoveNativeObject(self->zoneButtons[i]);
                 RemoveNativeObject(self);
