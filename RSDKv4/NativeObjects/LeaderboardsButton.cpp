@@ -46,7 +46,7 @@ void LeaderboardsButton_Main(void *objPtr)
         MatrixTranslateXYZF(&self->matrixTemp, self->x, self->y, self->z - 8.0);
         MatrixMultiplyF(&self->renderMatrix, &self->matrixTemp);
         SetRenderMatrix(&self->renderMatrix);
-        RenderMesh(self->meshLeaderboards, MESH_NORMALS, true);
+        RenderMesh(self->meshLeaderboards, MESH_COLORS, true);
         SetRenderMatrix(NULL);
 
         NativeEntity_TextLabel *label = self->labelPtr;

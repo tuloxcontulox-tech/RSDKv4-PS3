@@ -81,7 +81,7 @@ void StartGameButton_Main(void *objPtr)
         MatrixTranslateXYZF(&self->matrixTemp, self->x, self->y, self->z - 8.0);
         MatrixMultiplyF(&self->renderMatrix, &self->matrixTemp);
         SetRenderMatrix(&self->renderMatrix);
-        RenderMesh(self->meshCart, MESH_NORMALS, true);
+        RenderMesh(self->meshCart, MESH_COLORS, true);
         SetRenderMatrix(NULL);
 
         NativeEntity_TextLabel *label = self->labelPtr;
