@@ -647,22 +647,51 @@ void LoadStageFiles(void)
             char modHash[33];
             GetModHash(modHash);
             char globalBytecodePath[0x100];
-            if (modHash[0])
-                snprintf(globalBytecodePath, sizeof(globalBytecodePath), "Bytecode/GlobalCode_%s.bin", modHash);
-            else
-                snprintf(globalBytecodePath, sizeof(globalBytecodePath), "Bytecode/GlobalCode_Retail.bin");
-
             bool bytecodeExists  = false;
-            char fullPath[0x200];
+
+            if (modHash[0]) {
+                snprintf(globalBytecodePath, sizeof(globalBytecodePath), "Bytecode/GlobalCode_%s.bin", modHash);
+                char fullPath[0x200];
 #if RETRO_PLATFORM == RETRO_PS3 || RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_OSX
-            snprintf(fullPath, sizeof(fullPath), "%s%s", gamePath, globalBytecodePath);
+                snprintf(fullPath, sizeof(fullPath), "%s%s", gamePath, globalBytecodePath);
 #else
-            snprintf(fullPath, sizeof(fullPath), "%s", globalBytecodePath);
+                snprintf(fullPath, sizeof(fullPath), "%s", globalBytecodePath);
 #endif
-            FileIO *f_test = fOpen(fullPath, "rb");
-            if (f_test) {
-                fClose(f_test);
-                bytecodeExists = true;
+                FileIO *f_test = fOpen(fullPath, "rb");
+                if (f_test) {
+                    fClose(f_test);
+                    bytecodeExists = true;
+                }
+            }
+
+            if (!bytecodeExists) {
+                StrCopy(globalBytecodePath, "Bytecode/GlobalCode.bin");
+                char fullPath[0x200];
+#if RETRO_PLATFORM == RETRO_PS3 || RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_OSX
+                snprintf(fullPath, sizeof(fullPath), "%s%s", gamePath, globalBytecodePath);
+#else
+                snprintf(fullPath, sizeof(fullPath), "%s", globalBytecodePath);
+#endif
+                FileIO *f_test = fOpen(fullPath, "rb");
+                if (f_test) {
+                    fClose(f_test);
+                    bytecodeExists = true;
+                }
+            }
+
+            if (!bytecodeExists) {
+                StrCopy(globalBytecodePath, "Bytecode/GlobalCode_Retail.bin");
+                char fullPath[0x200];
+#if RETRO_PLATFORM == RETRO_PS3 || RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_OSX
+                snprintf(fullPath, sizeof(fullPath), "%s%s", gamePath, globalBytecodePath);
+#else
+                snprintf(fullPath, sizeof(fullPath), "%s", globalBytecodePath);
+#endif
+                FileIO *f_test = fOpen(fullPath, "rb");
+                if (f_test) {
+                    fClose(f_test);
+                    bytecodeExists = true;
+                }
             }
 
             if (bytecodeExists) {
@@ -855,29 +884,51 @@ void LoadStageFiles(void)
             GetModHash(modHash);
             char stageBytecodePath[0x100];
             stageBytecodePath[0] = 0;
-            switch (activeStageList) {
-                case STAGELIST_PRESENTATION:
-                case STAGELIST_REGULAR:
-                case STAGELIST_BONUS:
-                case STAGELIST_SPECIAL:
-                    if (modHash[0])
-                        snprintf(stageBytecodePath, sizeof(stageBytecodePath), "Bytecode/%s_%s.bin", stageList[activeStageList][stageListPosition].folder, modHash);
-                    else
-                        snprintf(stageBytecodePath, sizeof(stageBytecodePath), "Bytecode/%s_Retail.bin", stageList[activeStageList][stageListPosition].folder);
-                    break;
-                default: break;
-            }
             bool stageBytecodeExists = false;
-            char fullStagePath[0x200];
+
+            if (modHash[0]) {
+                snprintf(stageBytecodePath, sizeof(stageBytecodePath), "Bytecode/%s_%s.bin", stageList[activeStageList][stageListPosition].folder, modHash);
+                char fullStagePath[0x200];
 #if RETRO_PLATFORM == RETRO_PS3 || RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_OSX
-            snprintf(fullStagePath, sizeof(fullStagePath), "%s%s", gamePath, stageBytecodePath);
+                snprintf(fullStagePath, sizeof(fullStagePath), "%s%s", gamePath, stageBytecodePath);
 #else
-            snprintf(fullStagePath, sizeof(fullStagePath), "%s", stageBytecodePath);
+                snprintf(fullStagePath, sizeof(fullStagePath), "%s", stageBytecodePath);
 #endif
-            FileIO *fs_test = fOpen(fullStagePath, "rb");
-            if (fs_test) {
-                fClose(fs_test);
-                stageBytecodeExists = true;
+                FileIO *fs_test = fOpen(fullStagePath, "rb");
+                if (fs_test) {
+                    fClose(fs_test);
+                    stageBytecodeExists = true;
+                }
+            }
+
+            if (!stageBytecodeExists) {
+                snprintf(stageBytecodePath, sizeof(stageBytecodePath), "Bytecode/%s.bin", stageList[activeStageList][stageListPosition].folder);
+                char fullStagePath[0x200];
+#if RETRO_PLATFORM == RETRO_PS3 || RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_OSX
+                snprintf(fullStagePath, sizeof(fullStagePath), "%s%s", gamePath, stageBytecodePath);
+#else
+                snprintf(fullStagePath, sizeof(fullStagePath), "%s", stageBytecodePath);
+#endif
+                FileIO *fs_test = fOpen(fullStagePath, "rb");
+                if (fs_test) {
+                    fClose(fs_test);
+                    stageBytecodeExists = true;
+                }
+            }
+
+            if (!stageBytecodeExists) {
+                snprintf(stageBytecodePath, sizeof(stageBytecodePath), "Bytecode/%s_Retail.bin", stageList[activeStageList][stageListPosition].folder);
+                char fullStagePath[0x200];
+#if RETRO_PLATFORM == RETRO_PS3 || RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_OSX
+                snprintf(fullStagePath, sizeof(fullStagePath), "%s%s", gamePath, stageBytecodePath);
+#else
+                snprintf(fullStagePath, sizeof(fullStagePath), "%s", stageBytecodePath);
+#endif
+                FileIO *fs_test = fOpen(fullStagePath, "rb");
+                if (fs_test) {
+                    fClose(fs_test);
+                    stageBytecodeExists = true;
+                }
             }
 
             if (stageBytecodeExists) {

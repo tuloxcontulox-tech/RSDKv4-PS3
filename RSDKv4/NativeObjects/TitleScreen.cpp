@@ -126,7 +126,7 @@ void TitleScreen_Create(void *objPtr)
             package         = LoadTexture("Data/Game/Models/Package_JP.png", TEXFMT_RGBA5551);
             self->introMesh = LoadMesh("Data/Game/Models/Intro.bin", self->introTextureID);
             self->boxMesh   = LoadMesh("Data/Game/Models/JPBox.bin", package);
-            self->cartMesh  = LoadMesh("Data/Game/Models/JPCartridge.bin", LoadTexture("Data/Game/Models/SonicCD.png", TEXFMT_RGBA5551));
+            self->cartMesh  = LoadMesh("Data/Game/Models/JPCartdridge.bin", LoadTexture("Data/Game/Models/SonicCD.png", TEXFMT_RGBA5551));
             break;
         case REGION_US:
             package         = LoadTexture("Data/Game/Models/Package_US.png", TEXFMT_RGBA5551);

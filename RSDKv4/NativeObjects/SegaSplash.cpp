@@ -35,7 +35,7 @@ void SegaSplash_LoadStep(NativeEntity_SegaSplash *self)
         case 2: {
             package = LoadTexture("Data/Game/Models/Package_JP.png", TEXFMT_RGBA5551);
             LoadMesh("Data/Game/Models/JPBox.bin", package);
-            LoadMesh("Data/Game/Models/JPCartridge.bin", LoadTexture("Data/Game/Models/SonicCD.png", TEXFMT_RGBA5551));
+            LoadMesh("Data/Game/Models/JPCartdridge.bin", LoadTexture("Data/Game/Models/SonicCD.png", TEXFMT_RGBA5551));
         } break;
         case 3: {
             package = LoadTexture("Data/Game/Models/Package_US.png", TEXFMT_RGBA5551);
