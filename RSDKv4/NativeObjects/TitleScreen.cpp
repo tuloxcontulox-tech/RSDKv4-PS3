@@ -3,6 +3,9 @@
 void TitleScreen_Create(void *objPtr)
 {
     RSDK_THIS(TitleScreen);
+    int heading  = 0;
+    int labelTex = 0;
+    int textTex  = 0;
 
     self->state          = TITLESCREEN_STATE_SETUP;
     self->introRectAlpha = 320.0;
@@ -10,10 +13,6 @@ void TitleScreen_Create(void *objPtr)
 
     // code has been moved to SegaSplash_Create due to the possibility of opening the dev menu before this loads :(
 #if RETRO_USE_ORIGINAL_CODE
-    int heading  = 0;
-    int labelTex = 0;
-    int textTex  = 0;
-
     ResetBitmapFonts();
     if (Engine.useHighResAssets)
         heading = LoadTexture("Data/Game/Menu/Heading_EN.png", TEXFMT_RGBA4444);
@@ -169,7 +168,7 @@ void TitleScreen_Main(void *objPtr)
             PlayMusic(0, 0);
             self->state = TITLESCREEN_STATE_ENTERINTRO;
             SetRenderBlendMode(RENDER_BLEND_ALPHA);
-            RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 0, 0, 0, (int)self->introRectAlpha);
+            RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 0, 0, 0, self->introRectAlpha);
             break;
         }
 
@@ -189,7 +188,7 @@ void TitleScreen_Main(void *objPtr)
             self->introRectAlpha -= (300.0 * Engine.deltaTime);
             if (self->introRectAlpha < -320.0)
                 self->state = TITLESCREEN_STATE_INTRO;
-            RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 0, 0, 0, (int)self->introRectAlpha);
+            RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 0, 0, 0, self->introRectAlpha);
             CheckKeyDown(&keyDown);
             CheckKeyPress(&keyPress);
 

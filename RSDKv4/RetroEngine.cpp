@@ -510,6 +510,20 @@ void RetroEngine::Init()
         rsdkFound = CheckRSDKFile(dest);
     }
 
+    // Check if Scripts folder exists in BASE_PATH
+    char scriptsPath[0x100];
+    bool scriptsFound = false;
+    sprintf(scriptsPath, "%sScripts", BASE_PATH);
+    DIR *scriptsDir = opendir(scriptsPath);
+    if (!scriptsDir) {
+        sprintf(scriptsPath, "%sscripts", BASE_PATH);
+        scriptsDir = opendir(scriptsPath);
+    }
+    if (scriptsDir) {
+        scriptsFound = true;
+        closedir(scriptsDir);
+    }
+
     if (InitRenderDevice()) {
         textMenuSurfaceNo = SURFACE_COUNT - 1;
         bool gifLoaded = LoadGIFFile("Data/Game/SystemText.gif", textMenuSurfaceNo);
@@ -535,16 +549,19 @@ void RetroEngine::Init()
             gameMenu[0].alignment      = 2;
             gameMenu[0].selectionCount = 1;
 
-            if (rsdkFound) {
-                AddTextMenuEntry(&gameMenu[0], "Loading Data.rsdk");
+            if (rsdkFound && scriptsFound) {
+                AddTextMenuEntry(&gameMenu[0], "Loading Data.rsdk and Scripts Decompilation folder");
+            }
+            else if (!rsdkFound) {
+                AddTextMenuEntry(&gameMenu[0], "Data.rsdk no Found");
             }
             else {
-                AddTextMenuEntry(&gameMenu[0], "Data.rsdk no Found");
+                AddTextMenuEntry(&gameMenu[0], "Scripts Decompilation folder no Found");
             }
         }
 
         uint64_t startTime = sys_time_get_system_time();
-        uint64_t duration  = rsdkFound ? 1000000 : 3000000; // 1s if found, 3s if not
+        uint64_t duration  = (rsdkFound && scriptsFound) ? 1000000 : 3000000; // 1s if found, 3s if not
         
         while (sys_time_get_system_time() - startTime < duration) {
             cellSysutilCheckCallback();
@@ -558,6 +575,8 @@ void RetroEngine::Init()
             else {
                 if (!rsdkFound)
                     DrawCrudeText("Data.rsdk no Found", (SCREEN_XSIZE / 2) - 54, (SCREEN_YSIZE / 2) - 4, 255, 255, 255);
+                else if (!scriptsFound)
+                    DrawCrudeText("Scripts Decompilation folder no Found", (SCREEN_XSIZE / 2) - 48, (SCREEN_YSIZE / 2) - 4, 255, 255, 255);
             }
             
             TransferRetroBuffer();
@@ -568,7 +587,7 @@ void RetroEngine::Init()
 #endif
         }
 
-        if (!rsdkFound) {
+        if (!rsdkFound || !scriptsFound) {
             running = false;
             return;
         }
@@ -580,7 +599,10 @@ void RetroEngine::Init()
 #endif
 
 #if RETRO_PLATFORM == RETRO_PS3
-    forceUseScripts = false;
+    if (scriptsFound) {
+        forceUseScripts = true;
+        PrintLog("External Scripts folder detected, forcing TxtScripts mode.");
+    }
 #endif
 #if RETRO_USE_NETWORKING
     InitNetwork();

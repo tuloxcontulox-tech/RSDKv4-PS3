@@ -98,6 +98,16 @@ static bool ThreadedResolvePath(char *dest, const char *filePath, int *packID, i
     if (preloadMutexCreated) sys_lwmutex_unlock(&preloadMutex);
     if (abortPreload) return false;
 
+    if (forceUseScripts && !forceFolder) {
+        if (strncasecmp(filePathBuf, "Data/Scripts/", 13) == 0 && (strcasestr(filePathBuf, ".txt"))) {
+            forceFolder = true;
+            char scriptPath[0x100];
+            strncpy(scriptPath, filePathBuf + 5, 0xFF); // Skip "Data/"
+            scriptPath[0xFF] = 0;
+    for (int i = 0; scriptPath[i]; i++) if (scriptPath[i] == '\\') scriptPath[i] = '/';
+            strncpy(filePathBuf, scriptPath, 0xFF);
+        }
+    }
 #endif
 
     int fileIndex = -1;
@@ -586,83 +596,53 @@ void PreloadThreadFunc(uint64_t arg)
 
     // Check for Stage Bytecode
     char stageBytecodePath[0x100];
-    bool sBCExists = false;
-
-    if (modHash[0]) {
+    if (modHash[0])
         snprintf(stageBytecodePath, sizeof(stageBytecodePath), "Bytecode/%s_%s.bin", folder, modHash);
-        char fullPath_s[0x200];
-        snprintf(fullPath_s, sizeof(fullPath_s), "%s%s", gamePath, stageBytecodePath);
-        FILE *f_test_s = fopen(fullPath_s, "rb");
-        if (f_test_s) {
-            fclose(f_test_s);
-            sBCExists = true;
-        }
-    }
-
-    if (!sBCExists) {
-        snprintf(stageBytecodePath, sizeof(stageBytecodePath), "Bytecode/%s.bin", folder);
-        char fullPath_s[0x200];
-        snprintf(fullPath_s, sizeof(fullPath_s), "%s%s", gamePath, stageBytecodePath);
-        FILE *f_test_s = fopen(fullPath_s, "rb");
-        if (f_test_s) {
-            fclose(f_test_s);
-            sBCExists = true;
-        }
-    }
-
-    if (!sBCExists) {
+    else
         snprintf(stageBytecodePath, sizeof(stageBytecodePath), "Bytecode/%s_Retail.bin", folder);
-        char fullPath_s[0x200];
-        snprintf(fullPath_s, sizeof(fullPath_s), "%s%s", gamePath, stageBytecodePath);
-        FILE *f_test_s = fopen(fullPath_s, "rb");
-        if (f_test_s) {
-            fclose(f_test_s);
-            sBCExists = true;
-        }
+
+    char fullPath_s[0x200];
+    snprintf(fullPath_s, sizeof(fullPath_s), "%s%s", gamePath, stageBytecodePath);
+    FILE *f_test_s = fopen(fullPath_s, "rb");
+    bool sBCExists = false;
+    if (f_test_s) {
+        fclose(f_test_s);
+        sBCExists = true;
     }
 
-    if (sBCExists) {
+    if (forceUseScripts && !sBCExists) {
+        // Preload scripts from StageConfig.bin (Stage-specific scripts)
+        char stageConfigPath[0x100];
+        snprintf(stageConfigPath, sizeof(stageConfigPath), "Data/Stages/%s/StageConfig.bin", folder);
+        GetScriptsFromConfig(stageConfigPath, relPaths, &pathIdx);
+    }
+    else {
         snprintf(relPaths[pathIdx++], 0x100, "%s", stageBytecodePath);
     }
 
     // Check for Global Bytecode
     char globalBytecodePath[0x100];
-    bool gBCExists = false;
-
-    if (modHash[0]) {
+    if (modHash[0])
         snprintf(globalBytecodePath, sizeof(globalBytecodePath), "Bytecode/GlobalCode_%s.bin", modHash);
-        char fullPath_g[0x200];
-        snprintf(fullPath_g, sizeof(fullPath_g), "%s%s", gamePath, globalBytecodePath);
-        FILE *f_test_g = fopen(fullPath_g, "rb");
-        if (f_test_g) {
-            fclose(f_test_g);
-            gBCExists = true;
-        }
+    else
+        snprintf(globalBytecodePath, sizeof(globalBytecodePath), "Bytecode/GlobalCode_Retail.bin");
+
+    char fullPath_g[0x200];
+    snprintf(fullPath_g, sizeof(fullPath_g), "%s%s", gamePath, globalBytecodePath);
+    FILE *f_test_g = fopen(fullPath_g, "rb");
+    bool gBCExists = false;
+    if (f_test_g) {
+        fclose(f_test_g);
+        gBCExists = true;
     }
 
-    if (!gBCExists) {
-        StrCopy(globalBytecodePath, "Bytecode/GlobalCode.bin");
-        char fullPath_g[0x200];
-        snprintf(fullPath_g, sizeof(fullPath_g), "%s%s", gamePath, globalBytecodePath);
-        FILE *f_test_g = fopen(fullPath_g, "rb");
-        if (f_test_g) {
-            fclose(f_test_g);
-            gBCExists = true;
-        }
+    if (forceUseScripts && !gBCExists) {
+        // Preload all global scripts
+        GetGlobalScripts(relPaths, &pathIdx);
+        // Preload scripts from GameConfig.bin (Global scripts)
+        GetScriptsFromConfig("Data/Game/GameConfig.bin", relPaths, &pathIdx);
     }
-
-    if (!gBCExists) {
-        StrCopy(globalBytecodePath, "Bytecode/GlobalCode_Retail.bin");
-        char fullPath_g[0x200];
-        snprintf(fullPath_g, sizeof(fullPath_g), "%s%s", gamePath, globalBytecodePath);
-        FILE *f_test_g = fopen(fullPath_g, "rb");
-        if (f_test_g) {
-            fclose(f_test_g);
-            gBCExists = true;
-        }
-    }
-
-    if (gBCExists) {
+    else {
         snprintf(relPaths[pathIdx++], 0x100, "%s", globalBytecodePath);
     }
 

@@ -285,6 +285,18 @@ bool LoadFile(const char *filePath, FileInfo *fileInfo)
             break;
     }
 
+    if (forceUseScripts && !forceFolder) {
+        if (std::string(filePathBuf).rfind("Data/Scripts/", 0) == 0 && ends_with(std::string(filePathBuf), "txt")) {
+            // is a script, since those dont exist normally, load them from "scripts/"
+            forceFolder   = true;
+            Engine.usingDataFile = false;
+            addPath              = true;
+            std::string fStr     = std::string(filePathBuf);
+            fStr.erase(fStr.begin(), fStr.begin() + 5); // remove "Data/"
+            StrCopy(filePathBuf, fStr.c_str());
+            for (int i = 0; filePathBuf[i]; i++) if (filePathBuf[i] == '\\') filePathBuf[i] = '/';
+        }
+    }
 #endif
 
 #if RETRO_PLATFORM == RETRO_OSX || RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_PS3

@@ -685,10 +685,8 @@ void RecordsScreen_Main(void *objPtr)
                     }
                 }
 
-                if (timeAttack->button) {
-                    SetStringToFont(timeAttack->button->text, strTotalTime, FONT_LABEL);
-                    AddTimeStringToFont(timeAttack->button->text, timeAttack->totalTime, FONT_LABEL);
-                }
+                SetStringToFont(timeAttack->button->text, strTotalTime, FONT_LABEL);
+                AddTimeStringToFont(timeAttack->button->text, timeAttack->totalTime, FONT_LABEL);
                 if (timeAttack->totalTime <= 270000) {
                     int ach    = -1;
                     int status = 100;

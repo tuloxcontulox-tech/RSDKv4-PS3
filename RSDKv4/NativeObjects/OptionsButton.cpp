@@ -46,7 +46,7 @@ void OptionsButton_Main(void *objPtr)
         MatrixTranslateXYZF(&self->matrix2, self->x, self->y, self->z - 8.0);
         MatrixMultiplyF(&self->renderMatrix, &self->matrix2);
         SetRenderMatrix(&self->renderMatrix);
-        RenderMesh(self->meshOptions, MESH_NORMALS, true);
+        RenderMesh(self->meshOptions, MESH_COLORS, true);
         SetRenderMatrix(NULL);
 
         NativeEntity_TextLabel *label = self->labelPtr;
