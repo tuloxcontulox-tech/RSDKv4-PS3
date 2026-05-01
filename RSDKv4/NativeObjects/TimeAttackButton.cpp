@@ -51,7 +51,7 @@ void TimeAttackButton_Main(void *objPtr)
         MatrixTranslateXYZF(&self->matrixTemp, self->x, self->y, self->z - 8.0);
         MatrixMultiplyF(&self->renderMatrix, &self->matrixTemp);
         SetRenderMatrix(&self->renderMatrix);
-        RenderMesh(self->meshTimeAttack, MESH_COLORS, true);
+        RenderMesh(self->meshTimeAttack, MESH_NORMALS, true);
         SetRenderMatrix(NULL);
 
         NativeEntity_TextLabel *label = self->labelPtr;

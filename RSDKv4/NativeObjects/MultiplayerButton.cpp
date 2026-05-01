@@ -54,7 +54,7 @@ void MultiplayerButton_Main(void *objPtr)
         MatrixTranslateXYZF(&self->matrixTemp, self->x, self->y, self->z - 8.0);
         MatrixMultiplyF(&self->renderMatrix, &self->matrixTemp);
         SetRenderMatrix(&self->renderMatrix);
-        RenderMesh(self->meshVS, MESH_COLORS, true);
+        RenderMesh(self->meshVS, MESH_NORMALS, true);
         SetRenderMatrix(NULL);
 
         NativeEntity_TextLabel *label = self->labelPtr;
