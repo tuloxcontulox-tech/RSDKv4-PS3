@@ -27,16 +27,6 @@ void MenuControl_Create(void *objPtr)
         self->buttonCount++;
     }
 
-    if (Engine.onlineActive) {
-        self->buttons[self->buttonCount]     = CREATE_ENTITY(AchievementsButton);
-        self->buttonFlags[self->buttonCount] = BUTTON_ACHIEVEMENTS;
-        self->buttonCount++;
-
-        self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(LeaderboardsButton);
-        self->buttonFlags[self->buttonCount] = BUTTON_LEADERBOARDS;
-        self->buttonCount++;
-    }
-
     self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(OptionsButton);
     self->buttonFlags[self->buttonCount] = BUTTON_OPTIONS;
     self->buttonCount++;
@@ -372,33 +362,6 @@ void MenuControl_Main(void *objPtr)
                         }
                         break;
 
-                    case BUTTON_ACHIEVEMENTS:
-                        if (Engine.onlineActive && false) {
-                            ShowAchievementsScreen();
-                        }
-                        else {
-                            self->state               = MENUCONTROL_STATE_MAIN;
-                            self->dialog              = CREATE_ENTITY(DialogPanel);
-                            self->dialog->buttonCount = DLGTYPE_OK;
-                            SetStringToFont(self->dialog->text, strNetworkMessage, FONT_TEXT);
-                            self->state = MENUCONTROL_STATE_DIALOGWAIT;
-                        }
-                        button->labelPtr->state = TEXTLABEL_STATE_IDLE;
-                        break;
-
-                    case BUTTON_LEADERBOARDS:
-                        self->state = MENUCONTROL_STATE_MAIN;
-                        if (Engine.onlineActive && false) {
-                            ShowLeaderboardsScreen();
-                        }
-                        else {
-                            self->dialog              = CREATE_ENTITY(DialogPanel);
-                            self->dialog->buttonCount = DLGTYPE_OK;
-                            SetStringToFont(self->dialog->text, strNetworkMessage, FONT_TEXT);
-                            self->state = MENUCONTROL_STATE_DIALOGWAIT;
-                        }
-                        button->labelPtr->state = TEXTLABEL_STATE_IDLE;
-                        break;
 
                     case BUTTON_OPTIONS:
                         self->state                  = MENUCONTROL_STATE_ENTERSUBMENU;

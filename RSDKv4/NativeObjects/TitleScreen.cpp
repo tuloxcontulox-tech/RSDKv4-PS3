@@ -125,7 +125,7 @@ void TitleScreen_Create(void *objPtr)
             package         = LoadTexture("Data/Game/Models/Package_JP.png", TEXFMT_RGBA5551);
             self->introMesh = LoadMesh("Data/Game/Models/Intro.bin", self->introTextureID);
             self->boxMesh   = LoadMesh("Data/Game/Models/JPBox.bin", package);
-            self->cartMesh  = LoadMesh("Data/Game/Models/JPCartridge.bin", package);
+            self->cartMesh  = LoadMesh("Data/Game/Models/JPCartridge.bin", LoadTexture("Data/Game/Models/SonicCD.png", TEXFMT_RGBA5551));
             break;
         case REGION_US:
             package         = LoadTexture("Data/Game/Models/Package_US.png", TEXFMT_RGBA5551);
@@ -279,7 +279,7 @@ void TitleScreen_Main(void *objPtr)
             MatrixTranslateXYZF(&self->matrixTemp, 0.0, 0.0, 200.0);
             MatrixMultiplyF(&self->renderMatrix, &self->matrixTemp);
             SetRenderMatrix(&self->renderMatrix);
-            RenderMesh(self->boxMesh, MESH_NORMALS, true);
+            RenderMesh(self->boxMesh, MESH_COLORS, true);
             SetRenderMatrix(NULL);
             SetRenderBlendMode(RENDER_BLEND_ALPHA);
             RenderImage(SCREEN_CENTERX_F - 32.0, 104.0, 160.0, 0.25, 0.25, 32.0, 32.0, 64.0, 64.0, 704.0, 544.0, self->skipButtonAlpha,
@@ -330,7 +330,7 @@ void TitleScreen_Main(void *objPtr)
             MatrixTranslateXYZF(&self->matrixTemp, self->x, 0.0, 200.0);
             MatrixMultiplyF(&self->renderMatrix, &self->matrixTemp);
             SetRenderMatrix(&self->renderMatrix);
-            RenderMesh(self->boxMesh, MESH_NORMALS, true);
+            RenderMesh(self->boxMesh, MESH_COLORS, true);
             SetRenderMatrix(NULL);
             SetRenderBlendMode(RENDER_BLEND_ALPHA);
 
@@ -362,7 +362,7 @@ void TitleScreen_Main(void *objPtr)
             MatrixTranslateXYZF(&self->matrixTemp, self->x, 0.0, 200.0);
             MatrixMultiplyF(&self->renderMatrix, &self->matrixTemp);
             SetRenderMatrix(&self->renderMatrix);
-            RenderMesh(self->boxMesh, MESH_NORMALS, true);
+            RenderMesh(self->boxMesh, MESH_COLORS, true);
             SetRenderMatrix(NULL);
             SetRenderBlendMode(RENDER_BLEND_ALPHA);
 
@@ -415,13 +415,13 @@ void TitleScreen_Main(void *objPtr)
             MatrixTranslateXYZF(&self->matrixTemp, self->x, self->y, 200.0);
             MatrixMultiplyF(&self->renderMatrix, &self->matrixTemp);
             SetRenderMatrix(&self->renderMatrix);
-            RenderMesh(self->boxMesh, MESH_NORMALS, true);
+            RenderMesh(self->boxMesh, MESH_COLORS, true);
 
             MatrixRotateXYZF(&self->renderMatrix2, 0.0, 0.0, self->rotationZ);
             MatrixTranslateXYZF(&self->matrixTemp, 0.0, self->matrixY, self->matrixZ);
             MatrixMultiplyF(&self->renderMatrix2, &self->matrixTemp);
             SetRenderMatrix(&self->renderMatrix2);
-            RenderMesh(self->cartMesh, MESH_NORMALS, true);
+            RenderMesh(self->cartMesh, MESH_COLORS, true);
             SetRenderMatrix(NULL);
 
             if (self->y < -360.0) {

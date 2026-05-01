@@ -16,9 +16,7 @@
 #include "TitleScreen.cpp"
 #include "StartGameButton.cpp"
 #include "TimeAttackButton.cpp"
-#include "AchievementsButton.cpp"
 #include "MultiplayerButton.cpp"
-#include "LeaderboardsButton.cpp"
 #if RETRO_USE_MOD_LOADER
 #include "ModsButton.cpp"
 #include "ModInfoButton.cpp"
