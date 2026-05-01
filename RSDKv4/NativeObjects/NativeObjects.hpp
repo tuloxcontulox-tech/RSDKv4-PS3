@@ -24,7 +24,9 @@ extern ushort helpText[0x1000];
 #include "TitleScreen.hpp"
 #include "StartGameButton.hpp"
 #include "TimeAttackButton.hpp"
+#include "AchievementsButton.hpp"
 #include "MultiplayerButton.hpp"
+#include "LeaderboardsButton.hpp"
 #if RETRO_USE_MOD_LOADER
 #include "ModsButton.hpp"
 #include "ModInfoButton.hpp"
