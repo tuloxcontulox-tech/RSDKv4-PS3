@@ -269,8 +269,8 @@ int InitRenderDevice()
 
         float aspect            = SCREEN_XSIZE_CONFIG / (float)SCREEN_YSIZE;
         displaySettings.height  = h;
-        displaySettings.width   = aspect * displaySettings.height;
-        displaySettings.offsetX = abs((int)w - displaySettings.width) / 2;
+        displaySettings.width   = (int)(aspect * displaySettings.height);
+        displaySettings.offsetX = (int)(abs((int)w - displaySettings.width) / 2);
         if (displaySettings.width > w) {
             displaySettings.offsetX = 0;
             displaySettings.width   = w;
@@ -753,8 +753,8 @@ void SetScreenDimensions(int width, int height)
 
         double aspect           = SCREEN_XSIZE_CONFIG / (float)SCREEN_YSIZE;
         displaySettings.height  = h;
-        displaySettings.width   = aspect * displaySettings.height;
-        displaySettings.offsetX = abs((int)w - displaySettings.width) / 2;
+        displaySettings.width   = (int)(aspect * displaySettings.height);
+        displaySettings.offsetX = (int)(abs((int)w - displaySettings.width) / 2);
         if (displaySettings.width > w) {
             displaySettings.offsetX = 0;
             displaySettings.width   = w;
@@ -927,8 +927,8 @@ void SetupViewport()
 
         double aspect           = SCREEN_XSIZE_CONFIG / (float)SCREEN_YSIZE;
         displaySettings.height  = h;
-        displaySettings.width   = aspect * displaySettings.height;
-        displaySettings.offsetX = abs((int)w - (int)displaySettings.width) / 2;
+        displaySettings.width   = (int)(aspect * displaySettings.height);
+        displaySettings.offsetX = (int)(abs((int)w - (int)displaySettings.width) / 2);
         if (displaySettings.width > (float)w) {
             displaySettings.offsetX = 0;
             displaySettings.width   = w;

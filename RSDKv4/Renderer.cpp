@@ -424,7 +424,7 @@ void RenderScene()
 
     if (dimAmount < 1.0) {
         SetRenderBlendMode(RENDER_BLEND_ALPHA);
-        RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 0, 0, 0, 0xFF - (dimAmount * 0xFF));
+        RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 0, 0, 0, (int)(0xFF - (dimAmount * 0xFF)));
         SetRenderBlendMode(RENDER_BLEND_NONE);
     }
 #endif
