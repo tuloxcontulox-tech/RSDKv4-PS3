@@ -53,9 +53,32 @@ void SaveSelect_Create(void *objPtr)
     for (int i = SAVESELECT_BUTTON_SAVE1; i < SAVESELECT_BUTTON_COUNT; ++i) {
         self->saveButtons[i] = CREATE_ENTITY(SubMenuButton);
 
-        int stagePos = saveGame->files[i - 1].stageID;
+        int stagePos       = 0;
+        int specialStageID = 0;
+        int characterID    = 0;
+        int emeralds       = 0;
+
+        if (Engine.gameType == GAME_SONICCD) {
+            int slot       = i - 1;
+            characterID    = saveRAM[slot * 8 + 0];
+            stagePos       = saveRAM[slot * 8 + 4];
+            emeralds       = saveRAM[slot * 8 + 5];
+            specialStageID = saveRAM[slot * 8 + 6];
+        }
+        else {
+            characterID    = saveGame->files[i - 1].characterID;
+            stagePos       = saveGame->files[i - 1].stageID;
+            emeralds       = saveGame->files[i - 1].emeralds;
+            specialStageID = saveGame->files[i - 1].specialStageID;
+        }
+
         if (stagePos >= 0x80) {
-            SetStringToFont(self->saveButtons[i]->text, strSaveStageList[saveGame->files[i - 1].specialStageID + 19], FONT_LABEL);
+            int textID = 0;
+            if (Engine.gameType == GAME_SONICCD)
+                textID = specialStageID + 32;
+            else
+                textID = specialStageID + 19;
+            SetStringToFont(self->saveButtons[i]->text, strSaveStageList[textID], FONT_LABEL);
             self->saveButtons[i]->state = SUBMENUBUTTON_STATE_SAVEBUTTON_SELECTED;
             self->saveButtons[i]->textY = 2.0;
             self->saveButtons[i]->scale = 0.08;
@@ -79,8 +102,8 @@ void SaveSelect_Create(void *objPtr)
 
         self->saveButtons[i]->matXOff = 512.0;
         self->saveButtons[i]->matZ    = 0.0;
-        self->saveButtons[i]->symbol  = saveGame->files[i - 1].characterID;
-        self->saveButtons[i]->flags   = saveGame->files[i - 1].emeralds;
+        self->saveButtons[i]->symbol  = characterID;
+        self->saveButtons[i]->flags   = emeralds;
         self->rotateY[i]              = DegreesToRad(16.0);
         MatrixRotateYF(&self->saveButtons[i]->matrix, self->rotateY[i]);
         MatrixTranslateXYZF(&self->matrix1, -128.0, y, 160.0);

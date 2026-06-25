@@ -32,7 +32,7 @@ ushort *strNSExitMessage    = NULL;
 ushort *strExitGame         = NULL;
 ushort *strNetworkMessage   = NULL;
 ushort *strStageList[16];
-ushort *strSaveStageList[32];
+ushort *strSaveStageList[128];
 ushort *strNewBestTime   = NULL;
 ushort *strRecords       = NULL;
 ushort *strNextAct       = NULL;

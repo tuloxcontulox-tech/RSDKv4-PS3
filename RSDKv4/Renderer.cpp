@@ -617,8 +617,8 @@ void RenderScene()
         }
 
 #if RETRO_USING_OPENGL
-        if (state->useFilter && cgContext) {
 #if RETRO_PLATFORM == RETRO_PS3
+        if (state->useFilter && cgContext) {
             CGprogram vProg = cgVertexProgram;
             CGprogram fProg = cgFragmentProgram;
 
@@ -716,12 +716,12 @@ void RenderScene()
 
         glDrawElements(GL_TRIANGLES, state->indexCount, GL_UNSIGNED_SHORT, state->indexPtr);
 
-        if (state->useFilter && cgContext) {
 #if RETRO_PLATFORM == RETRO_PS3
+        if (state->useFilter && cgContext) {
             cgGLDisableProfile(cgVertexProfile);
             cgGLDisableProfile(cgFragmentProfile);
-#endif
         }
+#endif
 #endif
     }
 

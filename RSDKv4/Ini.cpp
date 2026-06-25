@@ -370,10 +370,12 @@ void IniParser::Write(const char *filename, bool addPath)
 }
 #endif
 
+#if RETRO_PLATFORM == RETRO_PS3
 #ifdef __cplusplus
 namespace std {
     void exception::_Raise() const {
         while(1); 
     }
 }
+#endif
 #endif

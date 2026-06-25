@@ -2869,10 +2869,10 @@ void Draw3DFloorLayer(int layerID)
         }
         int XBuffer    = layerYPos / (i << 9) * -cosValue >> 8;
         int YBuffer    = sinValue * (layerYPos / (i << 9)) >> 8;
-        int XPos       = layerXPos + (3 * sinValue * (layerYPos / (i << 9)) >> 2) - XBuffer * SCREEN_CENTERX;
-        int YPos       = ZBuffer + (3 * cosValue * (layerYPos / (i << 9)) >> 2) - YBuffer * SCREEN_CENTERX;
+        int XPos       = layerXPos + (3 * sinValue * (layerYPos / (i << 9)) >> 2) - XBuffer * (SCREEN_XSIZE / 2);
+        int YPos       = ZBuffer + (3 * cosValue * (layerYPos / (i << 9)) >> 2) - YBuffer * (SCREEN_XSIZE / 2);
         int lineBuffer = 0;
-        while (lineBuffer < GFX_LINESIZE) {
+        while (lineBuffer < SCREEN_XSIZE) {
             int tileX = XPos >> 12;
             int tileY = YPos >> 12;
             if (tileX > -1 && tileX < layerWidth && tileY > -1 && tileY < layerHeight) {
@@ -2894,6 +2894,9 @@ void Draw3DFloorLayer(int layerID)
             XPos += XBuffer;
             YPos += YBuffer;
         }
+#if RETRO_PLATFORM == RETRO_PS3
+        frameBufferPtr += (GFX_LINESIZE - SCREEN_XSIZE);
+#endif
     }
 #endif
 }
@@ -2924,10 +2927,10 @@ void Draw3DSkyLayer(int layerID)
         }
         int xBuffer    = layerYPos / (i << 8) * -cosValue >> 9;
         int yBuffer    = sinValue * (layerYPos / (i << 8)) >> 9;
-        int XPos       = layerXPos + (3 * sinValue * (layerYPos / (i << 8)) >> 2) - xBuffer * GFX_LINESIZE;
-        int YPos       = layerZPos + (3 * cosValue * (layerYPos / (i << 8)) >> 2) - yBuffer * GFX_LINESIZE;
+        int XPos       = layerXPos + (3 * sinValue * (layerYPos / (i << 8)) >> 2) - xBuffer * SCREEN_XSIZE;
+        int YPos       = layerZPos + (3 * cosValue * (layerYPos / (i << 8)) >> 2) - yBuffer * SCREEN_XSIZE;
         int lineBuffer = 0;
-        while (lineBuffer < GFX_LINESIZE * 2) {
+        while (lineBuffer < SCREEN_XSIZE * 2) {
             int tileX = XPos >> 12;
             int tileY = YPos >> 12;
             if (tileX > -1 && tileX < layerWidth && tileY > -1 && tileY < layerHeight) {
@@ -2963,11 +2966,19 @@ void Draw3DSkyLayer(int layerID)
             YPos += yBuffer;
         }
 
-        if (!(i & 1))
-            frameBufferPtr -= GFX_LINESIZE;
+        if (!(i & 1)) {
+            frameBufferPtr -= SCREEN_XSIZE;
+#if RETRO_PLATFORM == RETRO_PS3
+            frameBufferPtr += (GFX_LINESIZE - SCREEN_XSIZE);
+#endif
+        }
 
-        if (!(i & 1) && !drawStageGFXHQ)
-            bufferPtr -= GFX_LINESIZE;
+        if (!(i & 1) && !drawStageGFXHQ) {
+            bufferPtr -= SCREEN_XSIZE;
+#if RETRO_PLATFORM == RETRO_PS3
+            bufferPtr += (GFX_LINESIZE - SCREEN_XSIZE);
+#endif
+        }
     }
 
     if (drawStageGFXHQ) {

@@ -24,7 +24,7 @@ set(RETRO_NAME "RSDKv4")
 set(RETRO_OUTPUT_NAME ${RETRO_NAME} CACHE STRING "The exported name of the executable.")
 
 set(RETRO_FILES
-    dependencies/all/tinyxml2/tinyxml2.cpp
+    dependencies/all/pugixml/src/pugixml.cpp
     RSDKv4/Animation.cpp
     RSDKv4/Audio.cpp
     RSDKv4/Collision.cpp
@@ -167,7 +167,7 @@ target_include_directories(RetroEngine PRIVATE
     RSDKv4/
     RSDKv4/NativeObjects/
     dependencies/all/stb-image/
-    dependencies/all/tinyxml2/
+    dependencies/all/pugixml/src/
 )
 
 if(RETRO_NETWORKING)

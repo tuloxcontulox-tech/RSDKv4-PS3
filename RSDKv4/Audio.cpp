@@ -1,5 +1,6 @@
 #include "RetroEngine.hpp"
 #include <cmath>
+#include <malloc.h>
 
 int globalSFXCount = 0;
 int stageSFXCount  = 0;
@@ -968,8 +969,8 @@ void SwapMusicTrack(const char *filePath, byte trackID, uint loopPoint, uint rat
     }
 }
 
-#if RETRO_PLATFORM == RETRO_PS3
 static volatile bool musicThreadRunning = false;
+#if RETRO_PLATFORM == RETRO_PS3
 void LoadMusic_Thread(uint64_t arg) {
     PrintLog("Music Thread: Started");
     LoadMusic(NULL);
