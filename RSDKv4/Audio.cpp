@@ -1,5 +1,7 @@
+#include <malloc.h>
 #include "RetroEngine.hpp"
 #include <cmath>
+#include <cstdlib>
 
 int globalSFXCount = 0;
 int stageSFXCount  = 0;

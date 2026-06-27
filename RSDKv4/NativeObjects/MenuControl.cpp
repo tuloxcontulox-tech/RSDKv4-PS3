@@ -18,24 +18,15 @@ void MenuControl_Create(void *objPtr)
 
 #if RETRO_USE_MOD_LOADER
     int vsID = GetSceneID(STAGELIST_PRESENTATION, "2P VS");
-    if (vsID != -1) {
+    if (vsID != -1 || Engine.gameType == GAME_SONICCD) {
 #else
-    if (Engine.gameType == GAME_SONIC2) {
+    if (Engine.gameType == GAME_SONIC2 || Engine.gameType == GAME_SONICCD) {
 #endif
         self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(MultiplayerButton);
         self->buttonFlags[self->buttonCount] = BUTTON_MULTIPLAYER;
         self->buttonCount++;
     }
 
-    if (Engine.onlineActive) {
-        self->buttons[self->buttonCount]     = CREATE_ENTITY(AchievementsButton);
-        self->buttonFlags[self->buttonCount] = BUTTON_ACHIEVEMENTS;
-        self->buttonCount++;
-
-        self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(LeaderboardsButton);
-        self->buttonFlags[self->buttonCount] = BUTTON_LEADERBOARDS;
-        self->buttonCount++;
-    }
 
     self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(OptionsButton);
     self->buttonFlags[self->buttonCount] = BUTTON_OPTIONS;
@@ -329,12 +320,37 @@ void MenuControl_Main(void *objPtr)
                         break;
 
                     case BUTTON_TIMEATTACK:
-                        self->state                  = MENUCONTROL_STATE_ENTERSUBMENU;
-                        self->autoButtonMoveVelocity = 0.0;
-                        button->g                    = 0xFF;
-                        button->labelPtr->state      = TEXTLABEL_STATE_NONE;
-                        self->backButton->visible    = true;
-                        CREATE_ENTITY(TimeAttack);
+                        if (Engine.gameType == GAME_SONICCD) {
+                            self->state             = MENUCONTROL_STATE_MAIN;
+                            button->labelPtr->state = TEXTLABEL_STATE_IDLE;
+                            SetGlobalVariableByName("options.saveSlot", 0);
+                            SetGlobalVariableByName("options.gameMode", 0);
+                            SetGlobalVariableByName("options.vsMode", 0);
+                            SetGlobalVariableByName("player.lives", 3);
+                            SetGlobalVariableByName("player.score", 0);
+                            SetGlobalVariableByName("player.scoreBonus", 50000);
+                            SetGlobalVariableByName("specialStage.listPos", 0);
+                            SetGlobalVariableByName("specialStage.emeralds", 0);
+                            SetGlobalVariableByName("specialStage.nextZone", 0);
+                            SetGlobalVariableByName("timeAttack.result", 0);
+                            SetGlobalVariableByName("lampPostID", 0);
+                            SetGlobalVariableByName("starPostID", 0);
+
+                            BackupNativeObjects();
+                            int id = GetSceneID(STAGELIST_PRESENTATION, "TIME ATTACK");
+                            if (id == -1)
+                                id = 2; // Default fallback if naming differs but usually it is 2
+                            InitStartingStage(STAGELIST_PRESENTATION, id, 0);
+                            CREATE_ENTITY(FadeScreen);
+                        }
+                        else {
+                            self->state                  = MENUCONTROL_STATE_ENTERSUBMENU;
+                            self->autoButtonMoveVelocity = 0.0;
+                            button->g                    = 0xFF;
+                            button->labelPtr->state      = TEXTLABEL_STATE_NONE;
+                            self->backButton->visible    = true;
+                            CREATE_ENTITY(TimeAttack);
+                        }
                         break;
 
                     case BUTTON_MULTIPLAYER:

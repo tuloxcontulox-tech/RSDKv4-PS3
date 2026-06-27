@@ -702,8 +702,6 @@ void RetroEngine::Init()
                         SetGlobalVariableByName("options.saveSlot", startSave);
                         SetGlobalVariableByName("options.gameMode", 1);
                         int slot = (startSave - 1);
-                        if (gameType != GAME_SONICCD)
-                            slot <<= 3;
 
                         SetGlobalVariableByName("options.stageSelectFlag", false);
                         if (gameType == GAME_SONICCD) {
@@ -770,16 +768,6 @@ void RetroEngine::Init()
         }
     }
 
-#if !RETRO_USE_ORIGINAL_CODE
-    gameType = GAME_SONIC2;
-#if RETRO_USE_MOD_LOADER
-    if (strstr(gameWindowText, "Sonic 1") || forceSonic1) {
-#else
-    if (strstr(gameWindowText, "Sonic 1")) {
-#endif
-        gameType = GAME_SONIC1;
-    }
-#endif
 
 #if !RETRO_USE_ORIGINAL_CODE
     bool skipStore = skipStartMenu;

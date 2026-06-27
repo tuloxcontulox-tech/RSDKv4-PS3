@@ -1,3 +1,4 @@
+#include <malloc.h>
 #include "RetroEngine.hpp"
 
 ushort blendLookupTable[0x20 * 0x100];

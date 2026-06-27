@@ -839,9 +839,11 @@ void RefreshEngine()
             Engine.forceSonic1 = true;
     }
 
-    Engine.gameType = GAME_SONIC2;
-    if (strstr(Engine.gameWindowText, "Sonic 1") || Engine.forceSonic1) {
-        Engine.gameType = GAME_SONIC1;
+    if (Engine.gameType == GAME_UNKNOWN) {
+        Engine.gameType = GAME_SONIC2;
+        if (strstr(Engine.gameWindowText, "Sonic 1") || Engine.forceSonic1) {
+            Engine.gameType = GAME_SONIC1;
+        }
     }
 
     achievementCount = 0;
