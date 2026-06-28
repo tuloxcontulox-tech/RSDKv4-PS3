@@ -12,9 +12,11 @@ void MenuControl_Create(void *objPtr)
     self->buttonFlags[self->buttonCount] = BUTTON_STARTGAME;
     self->buttonCount++;
 
-    self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(TimeAttackButton);
-    self->buttonFlags[self->buttonCount] = BUTTON_TIMEATTACK;
-    self->buttonCount++;
+    if (Engine.gameType != GAME_SONICCD) {
+        self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(TimeAttackButton);
+        self->buttonFlags[self->buttonCount] = BUTTON_TIMEATTACK;
+        self->buttonCount++;
+    }
 
 #if RETRO_USE_MOD_LOADER
     int vsID = GetSceneID(STAGELIST_PRESENTATION, "2P VS");
@@ -31,6 +33,12 @@ void MenuControl_Create(void *objPtr)
     self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(OptionsButton);
     self->buttonFlags[self->buttonCount] = BUTTON_OPTIONS;
     self->buttonCount++;
+
+    if (Engine.gameType == GAME_SONICCD) {
+        self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(ExtrasButton);
+        self->buttonFlags[self->buttonCount] = BUTTON_EXTRAS;
+        self->buttonCount++;
+    }
 
     self->backButton          = CREATE_ENTITY(BackButton);
     self->backButton->visible = false;
@@ -423,6 +431,15 @@ void MenuControl_Main(void *objPtr)
                         button->labelPtr->state      = TEXTLABEL_STATE_NONE;
                         self->backButton->visible    = true;
                         CREATE_ENTITY(OptionsMenu);
+                        break;
+
+                    case BUTTON_EXTRAS:
+                        self->state                  = MENUCONTROL_STATE_ENTERSUBMENU;
+                        self->autoButtonMoveVelocity = 0.0;
+                        button->g                    = 0xFF;
+                        button->labelPtr->state      = TEXTLABEL_STATE_NONE;
+                        self->backButton->visible    = true;
+                        CREATE_ENTITY(ExtrasMenu);
                         break;
 
                     default:

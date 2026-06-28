@@ -2,7 +2,7 @@
 #define NATIVE_EXTRASBUTTON_H
 
 struct NativeEntity_ExtrasButton : NativeEntity_AchievementsButton {
-    // No extra fields needed, same as AchievementsButton
+    MeshInfo *meshID;
 };
 
 void ExtrasButton_Create(void *objPtr);

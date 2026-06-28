@@ -38,6 +38,9 @@ ushort *strRecords       = NULL;
 ushort *strNextAct       = NULL;
 ushort *strPlay          = NULL;
 ushort *strTotalTime     = NULL;
+ushort *strExtras        = NULL;
+ushort *strDAGarden      = NULL;
+ushort *strStageSelect   = NULL;
 ushort *strInstructions  = NULL;
 ushort *strSettings      = NULL;
 ushort *strScreen        = NULL;
@@ -333,6 +336,9 @@ void InitLocalizedStrings()
     strNextAct       = ReadLocalizedString("NextAct", langStr, "Data/Game/StringList.txt", infoPtr);
     strPlay          = ReadLocalizedString("Play", langStr, "Data/Game/StringList.txt", infoPtr);
     strTotalTime     = ReadLocalizedString("TotalTime", langStr, "Data/Game/StringList.txt", infoPtr);
+    strExtras        = ReadLocalizedString("Extras", langStr, "Data/Game/StringList.txt", infoPtr);
+    strDAGarden      = ReadLocalizedString("DAGarden", langStr, "Data/Game/StringList.txt", infoPtr);
+    strStageSelect   = ReadLocalizedString("StageSelect", langStr, "Data/Game/StringList.txt", infoPtr);
     strInstructions  = ReadLocalizedString("Instructions", langStr, "Data/Game/StringList.txt", infoPtr);
     strSettings      = ReadLocalizedString("Settings", langStr, "Data/Game/StringList.txt", infoPtr);
     strScreen        = ReadLocalizedString("Screen", langStr, "Data/Game/StringList.txt", infoPtr);
@@ -534,4 +540,3 @@ void ReadCreditsList(const char *filePath)
         CloseFile();
     }
 }
-

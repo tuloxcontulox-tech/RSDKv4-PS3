@@ -100,15 +100,13 @@ void SubMenuButton_Main(void *objPtr)
                 0x00C0FF, 0x8000C0, 0xFF0000, 0xFF60FF, 0xFFC000, 0x60C000, 0xFFFFFF,
             };
             uint emeraldColorsSCD[] = {
-                0x60C000, 0xFFC000, 0xFFFF00, 0x0000FF, 0x00C0FF, 0x8000C0, 0xFF0000, 0xFFFFFF,
+                0x60C000, 0xFFC000, 0xFFFF00, 0x0000FF, 0x00C0FF, 0x8000C0, 0xFF0000,
             };
 
             float x = -60.0f;
             int count = 7;
             if (Engine.gameType == GAME_SONIC1)
                 count = 6;
-            else if (Engine.gameType == GAME_SONICCD)
-                count = 8;
 
             for (int i = 0; i < count; ++i) {
                 if (self->flags & (1 << i)) {
