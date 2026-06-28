@@ -53,24 +53,10 @@ void SaveSelect_Create(void *objPtr)
     for (int i = SAVESELECT_BUTTON_SAVE1; i < SAVESELECT_BUTTON_COUNT; ++i) {
         self->saveButtons[i] = CREATE_ENTITY(SubMenuButton);
 
-        int stagePos       = 0;
-        int specialStageID = 0;
-        int characterID    = 0;
-        int emeralds       = 0;
-
-        if (Engine.gameType == GAME_SONICCD) {
-            int slot       = i - 1;
-            characterID    = saveRAM[slot * 8 + 0];
-            stagePos       = saveRAM[slot * 8 + 4];
-            emeralds       = saveRAM[slot * 8 + 5];
-            specialStageID = saveRAM[slot * 8 + 6];
-        }
-        else {
-            characterID    = saveGame->files[i - 1].characterID;
-            stagePos       = saveGame->files[i - 1].stageID;
-            emeralds       = saveGame->files[i - 1].emeralds;
-            specialStageID = saveGame->files[i - 1].specialStageID;
-        }
+        int stagePos       = saveGame->files[i - 1].stageID;
+        int specialStageID = saveGame->files[i - 1].specialStageID;
+        int characterID    = saveGame->files[i - 1].characterID;
+        int emeralds       = saveGame->files[i - 1].emeralds;
 
         if (stagePos >= 0x80) {
             int textID = 0;
@@ -541,26 +527,13 @@ void SaveSelect_Main(void *objPtr)
                 self->saveButtons[self->selectedButton]->textY = -4.0;
                 self->saveButtons[self->selectedButton]->scale = 0.1;
 
-                if (Engine.gameType == GAME_SONICCD) {
-                    int slot              = self->selectedButton - 1;
-                    saveRAM[slot * 8 + 0] = 0;
-                    saveRAM[slot * 8 + 1] = 3;
-                    saveRAM[slot * 8 + 2] = 0;
-                    saveRAM[slot * 8 + 3] = 500000;
-                    saveRAM[slot * 8 + 4] = 0;
-                    saveRAM[slot * 8 + 5] = 0;
-                    saveRAM[slot * 8 + 6] = 0;
-                    saveRAM[slot * 8 + 7] = 0;
-                }
-                else {
-                    saveGame->files[self->selectedButton - 1].characterID    = 0;
-                    saveGame->files[self->selectedButton - 1].lives          = 3;
-                    saveGame->files[self->selectedButton - 1].score          = 0;
-                    saveGame->files[self->selectedButton - 1].scoreBonus     = 500000;
-                    saveGame->files[self->selectedButton - 1].stageID        = 0;
-                    saveGame->files[self->selectedButton - 1].emeralds       = 0;
-                    saveGame->files[self->selectedButton - 1].specialStageID = 0;
-                }
+                saveGame->files[self->selectedButton - 1].characterID    = 0;
+                saveGame->files[self->selectedButton - 1].lives          = 3;
+                saveGame->files[self->selectedButton - 1].score          = 0;
+                saveGame->files[self->selectedButton - 1].scoreBonus     = 500000;
+                saveGame->files[self->selectedButton - 1].stageID        = 0;
+                saveGame->files[self->selectedButton - 1].emeralds       = 0;
+                saveGame->files[self->selectedButton - 1].specialStageID = 0;
                 WriteSaveRAMData();
 
                 self->deleteEnabled = false;

@@ -25,6 +25,7 @@
 #include "ModsMenu.cpp"
 #endif
 #include "OptionsButton.cpp"
+#include "ExtrasButton.cpp"
 #include "BackButton.cpp"
 #include "SegaIDButton.cpp"
 #include "MenuControl.cpp"
@@ -42,6 +43,7 @@
 #include "CreditText.cpp"
 #include "StaffCredits.cpp"
 #include "OptionsMenu.cpp"
+#include "ExtrasMenu.cpp"
 #if RETRO_USE_NETWORKING
 #include "MultiplayerHandler.cpp"
 #include "MultiplayerScreen.cpp"

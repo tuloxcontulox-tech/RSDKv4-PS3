@@ -196,22 +196,23 @@ void PlayerSelectScreen_Main(void *objPtr)
                     SetGlobalVariableByName("options.gameMode", 0);
                 }
                 else {
-                    SetGlobalVariableByName("options.saveSlot", saveSel->selectedButton - 1);
+                    int slot = saveSel->selectedButton - 1;
+                    SetGlobalVariableByName("options.saveSlot", slot);
                     SetGlobalVariableByName("options.gameMode", 1);
 
                     switch (self->playerID) {
-                        case SAVESEL_SONIC: saveGame->files[saveSel->selectedButton - 1].characterID = 0; break;
-                        case SAVESEL_TAILS: saveGame->files[saveSel->selectedButton - 1].characterID = 1; break;
-                        case SAVESEL_KNUX: saveGame->files[saveSel->selectedButton - 1].characterID = 2; break;
-                        case SAVESEL_ST: saveGame->files[saveSel->selectedButton - 1].characterID = 3; break;
+                        case SAVESEL_SONIC: saveGame->files[slot].characterID = 0; break;
+                        case SAVESEL_TAILS: saveGame->files[slot].characterID = 1; break;
+                        case SAVESEL_KNUX: saveGame->files[slot].characterID = 2; break;
+                        case SAVESEL_ST: saveGame->files[slot].characterID = 3; break;
                     }
 
-                    saveGame->files[saveSel->selectedButton - 1].lives          = 3;
-                    saveGame->files[saveSel->selectedButton - 1].score          = 0;
-                    saveGame->files[saveSel->selectedButton - 1].scoreBonus     = 500000;
-                    saveGame->files[saveSel->selectedButton - 1].stageID        = 1;
-                    saveGame->files[saveSel->selectedButton - 1].emeralds       = 0;
-                    saveGame->files[saveSel->selectedButton - 1].specialStageID = 0;
+                    saveGame->files[slot].lives          = 3;
+                    saveGame->files[slot].score          = 0;
+                    saveGame->files[slot].scoreBonus     = 500000;
+                    saveGame->files[slot].stageID        = 1;
+                    saveGame->files[slot].emeralds       = 0;
+                    saveGame->files[slot].specialStageID = 0;
                     WriteSaveRAMData();
                 }
                 SetGlobalVariableByName("options.stageSelectFlag", 0);

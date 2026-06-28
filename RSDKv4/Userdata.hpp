@@ -6,7 +6,7 @@
 #define ACHIEVEMENT_COUNT (0x40)
 #define LEADERBOARD_COUNT (0x80)
 
-#define SAVEDATA_SIZE (0x2000)
+#define SAVEDATA_SIZE (0x4000)
 
 #if RETRO_USE_MOD_LOADER
 #define NATIIVEFUNCTION_COUNT (0x30)
@@ -20,34 +20,34 @@
 #define unused(x) (void)x
 
 struct SaveFile {
-    int characterID;    // Value 0/8/16/24
-    int lives;          // Value 1/9/17/25
-    int score;          // Value 2/10/18/26
-    int scoreBonus;     // Value 3/11/19/27
-    int stageID;        // Value 4/12/20/28
-    int emeralds;       // Value 5/13/21/29
-    int specialStageID; // Value 6/14/22/30
-    int unused;         // Value 7/15/23/31
+    int characterID;    // Value 0/10/20/30
+    int lives;          // Value 1/11/21/31
+    int score;          // Value 2/12/22/32
+    int scoreBonus;     // Value 3/13/23/33
+    int stageID;        // Value 4/14/24/34
+    int emeralds;       // Value 5/15/25/35
+    int specialStageID; // Value 6/16/26/36
+    int unused[3];      // Value 7-9/17-19/27-29/37-39
 };
 
 struct SaveGame {
-    SaveFile files[4];   // Values 0-31
-    int saveInitialized; // Value 32
-    int musVolume;       // Value 33
-    int sfxVolume;       // Value 34
-    int spindashEnabled; // Value 35
-    int boxRegion;       // Value 36
-    int vDPadSize;       // Value 37
-    int vDPadOpacity;    // Value 38
-    int vDPadX_Move;     // Value 39
-    int vDPadY_Move;     // Value 40
-    int vDPadX_Jump;     // Value 41
-    int vDPadY_Jump;     // Value 42
-    int tailsUnlocked;   // Value 43
-    int knuxUnlocked;    // Value 44
-    int unlockedActs;    // Value 45
-    int unlockedHPZ;     // Value 46
-    int unused[17];      // Values 47-63
+    SaveFile files[4];   // Values 0-39
+    int saveInitialized; // Value 40
+    int musVolume;       // Value 41
+    int sfxVolume;       // Value 42
+    int spindashEnabled; // Value 43
+    int boxRegion;       // Value 44
+    int vDPadSize;       // Value 45
+    int vDPadOpacity;    // Value 46
+    int vDPadX_Move;     // Value 47
+    int vDPadY_Move;     // Value 48
+    int vDPadX_Jump;     // Value 49
+    int vDPadY_Jump;     // Value 50
+    int tailsUnlocked;   // Value 51
+    int knuxUnlocked;    // Value 52
+    int unlockedActs;    // Value 53
+    int unlockedHPZ;     // Value 54
+    int extraSettings[9]; // Values 55-63
     int records[0x80];   // Values 64-192
     int padding[0x73F];  // Values 193-2047
     int customSS[0x400]; // Values 2048-3072

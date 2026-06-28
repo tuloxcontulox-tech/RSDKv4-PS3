@@ -319,7 +319,7 @@ void InitLocalizedStrings()
     }
 
     stageStrCount = 0;
-    for (int i = 0; i < 32; ++i) {
+    for (int i = 0; i < 128; ++i) {
         char buffer[0x20];
         sprintf(buffer, "SaveStageName%d", i + 1);
 

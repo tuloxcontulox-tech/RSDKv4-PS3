@@ -704,40 +704,19 @@ void RetroEngine::Init()
                         int slot = (startSave - 1);
 
                         SetGlobalVariableByName("options.stageSelectFlag", false);
-                        if (gameType == GAME_SONICCD) {
-                            SetGlobalVariableByName("player.lives", saveRAM[slot * 8 + 1]);
-                            SetGlobalVariableByName("player.score", saveRAM[slot * 8 + 2]);
-                            SetGlobalVariableByName("player.scoreBonus", saveRAM[slot * 8 + 3]);
-                            SetGlobalVariableByName("specialStage.emeralds", saveRAM[slot * 8 + 5]);
-                            SetGlobalVariableByName("specialStage.listPos", saveRAM[slot * 8 + 6]);
-                            SetGlobalVariableByName("stage.player2Enabled", saveRAM[slot * 8 + 0] == 3);
-                        }
-                        else {
-                            SetGlobalVariableByName("player.lives", saveGame->files[slot].lives);
-                            SetGlobalVariableByName("player.score", saveGame->files[slot].score);
-                            SetGlobalVariableByName("player.scoreBonus", saveGame->files[slot].scoreBonus);
-                            SetGlobalVariableByName("specialStage.emeralds", saveGame->files[slot].emeralds);
-                            SetGlobalVariableByName("specialStage.listPos", saveGame->files[slot].specialStageID);
-                            SetGlobalVariableByName("stage.player2Enabled", saveGame->files[slot].characterID == 3);
-                        }
+                        SetGlobalVariableByName("player.lives", saveGame->files[slot].lives);
+                        SetGlobalVariableByName("player.score", saveGame->files[slot].score);
+                        SetGlobalVariableByName("player.scoreBonus", saveGame->files[slot].scoreBonus);
+                        SetGlobalVariableByName("specialStage.emeralds", saveGame->files[slot].emeralds);
+                        SetGlobalVariableByName("specialStage.listPos", saveGame->files[slot].specialStageID);
+                        SetGlobalVariableByName("stage.player2Enabled", saveGame->files[slot].characterID == 3);
                         SetGlobalVariableByName("lampPostID", 0); // For S1
                         SetGlobalVariableByName("starPostID", 0); // For S2
                         SetGlobalVariableByName("options.vsMode", 0);
 
-                        int nextStage = 0;
-                        int specialStageID = 0;
-                        int characterID = 0;
-
-                        if (gameType == GAME_SONICCD) {
-                            nextStage = saveRAM[slot * 8 + 4];
-                            specialStageID = saveRAM[slot * 8 + 6];
-                            characterID = saveRAM[slot * 8 + 0];
-                        }
-                        else {
-                            nextStage = saveGame->files[slot].stageID;
-                            specialStageID = saveGame->files[slot].specialStageID;
-                            characterID = saveGame->files[slot].characterID;
-                        }
+                        int nextStage      = saveGame->files[slot].stageID;
+                        int specialStageID = saveGame->files[slot].specialStageID;
+                        int characterID    = saveGame->files[slot].characterID;
 
                         if (nextStage >= 0x80) {
                             SetGlobalVariableByName("specialStage.nextZone", nextStage - 0x81);
@@ -755,7 +734,6 @@ void RetroEngine::Init()
                             saveGame->files[slot].stageID        = 0;
                             saveGame->files[slot].emeralds       = 0;
                             saveGame->files[slot].specialStageID = 0;
-                            saveGame->files[slot].unused         = 0;
 
                             SetGlobalVariableByName("specialStage.nextZone", 0);
                             InitStartingStage(STAGELIST_REGULAR, 0, 0);

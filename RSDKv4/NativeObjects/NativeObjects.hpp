@@ -33,6 +33,7 @@ extern ushort helpText[0x1000];
 #include "ModsMenu.hpp"
 #endif
 #include "OptionsButton.hpp"
+#include "ExtrasButton.hpp"
 #include "BackButton.hpp"
 #include "SegaIDButton.hpp"
 #include "MenuControl.hpp"
@@ -50,6 +51,7 @@ extern ushort helpText[0x1000];
 #include "CreditText.hpp"
 #include "StaffCredits.hpp"
 #include "OptionsMenu.hpp"
+#include "ExtrasMenu.hpp"
 #if RETRO_USE_NETWORKING
 #include "MultiplayerHandler.hpp"
 #include "MultiplayerScreen.hpp"
