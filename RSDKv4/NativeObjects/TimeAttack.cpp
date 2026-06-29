@@ -208,7 +208,7 @@ void TimeAttack_Create(void *objPtr)
     }
 
     int zone = saveGame->unlockedActs;
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 10; ++i) {
         if (saveGame->files[i].stageID > zone)
             zone = saveGame->files[i].stageID;
     }

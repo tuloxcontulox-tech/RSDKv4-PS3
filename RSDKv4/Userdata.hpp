@@ -33,25 +33,25 @@ struct SaveFile {
 };
 
 struct SaveGame {
-    SaveFile files[4];   // Values 0-39
-    int saveInitialized; // Value 40
-    int musVolume;       // Value 41
-    int sfxVolume;       // Value 42
-    int spindashEnabled; // Value 43
-    int boxRegion;       // Value 44
-    int vDPadSize;       // Value 45
-    int vDPadOpacity;    // Value 46
-    int vDPadX_Move;     // Value 47
-    int vDPadY_Move;     // Value 48
-    int vDPadX_Jump;     // Value 49
-    int vDPadY_Jump;     // Value 50
-    int tailsUnlocked;   // Value 51
-    int knuxUnlocked;    // Value 52
-    int unlockedActs;    // Value 53
-    int unlockedHPZ;     // Value 54
-    int unused[9];       // Values 55-63
-    int records[0x80];   // Values 64-192
-    int padding[0x73F];  // Values 193-2047
+    SaveFile files[10];  // Values 0-99
+    int saveInitialized; // Value 100
+    int musVolume;       // Value 101
+    int sfxVolume;       // Value 102
+    int spindashEnabled; // Value 103
+    int boxRegion;       // Value 104
+    int vDPadSize;       // Value 105
+    int vDPadOpacity;    // Value 106
+    int vDPadX_Move;     // Value 107
+    int vDPadY_Move;     // Value 108
+    int vDPadX_Jump;     // Value 109
+    int vDPadY_Jump;     // Value 110
+    int tailsUnlocked;   // Value 111
+    int knuxUnlocked;    // Value 112
+    int unlockedActs;    // Value 113
+    int unlockedHPZ;     // Value 114
+    int unused[5];       // Values 115-119
+    int records[0x200];  // Values 120-631
+    int padding[0x588];  // Values 632-2047
     int customSS[0x400]; // Values 2048-3072
 };
 

@@ -1,5 +1,4 @@
 #include "RetroEngine.hpp"
-#include <malloc.h>
 #include <cmath>
 #include <cstdlib>
 

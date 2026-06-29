@@ -35,7 +35,10 @@ void StartGameButton_Create(void *objPtr)
     self->labelPtr->scale  = 0.15;
     self->labelPtr->alpha  = 0;
     self->labelPtr->state  = TEXTLABEL_STATE_IDLE;
-    SetStringToFont(self->labelPtr->text, strStartGame, FONT_HEADING);
+    if (strStartGame)
+        SetStringToFont(self->labelPtr->text, strStartGame, FONT_HEADING);
+    else if (strPlay)
+        SetStringToFont(self->labelPtr->text, strPlay, FONT_HEADING);
     self->labelPtr->alignPtr(self->labelPtr, ALIGN_CENTER);
 }
 void StartGameButton_Main(void *objPtr)

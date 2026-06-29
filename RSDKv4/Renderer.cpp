@@ -333,25 +333,28 @@ void SetRenderVertexColor(byte r, byte g, byte b)
 #undef far
 void SetPerspectiveMatrix(float w, float h, float near, float far)
 {
-    float m[19];
+    float m[16];
 
     float val = tanf((float)(0.017453292f * w) * 0.5f);
-    m[11]     = 1.0;
     m[0]      = 1.0 / val;
     m[1]      = 0.0;
     m[2]      = 0.0;
     m[3]      = 0.0;
+
     m[4]      = 0.0;
+    m[5]      = 1.0 / (val * h);
     m[6]      = 0.0;
     m[7]      = 0.0;
+
     m[8]      = 0.0;
     m[9]      = 0.0;
+    m[10]     = (far + near) / (far - near);
+    m[11]     = 1.0;
+
     m[12]     = 0.0;
     m[13]     = 0.0;
-    m[15]     = 0.0;
-    m[5]      = 1.0 / (val * h);
-    m[10]     = (far + near) / (far - near);
     m[14]     = -((far + far) * near) / (far - near);
+    m[15]     = 0.0;
 #if RETRO_USING_OPENGL
     glMultMatrixf(m);
 #endif

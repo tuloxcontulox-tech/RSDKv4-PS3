@@ -2897,9 +2897,7 @@ void Draw3DFloorLayer(int layerID)
             XPos += XBuffer;
             YPos += YBuffer;
         }
-#if RETRO_PLATFORM == RETRO_PS3
         frameBufferPtr += (GFX_LINESIZE - SCREEN_XSIZE);
-#endif
     }
 #endif
 }
@@ -2972,18 +2970,13 @@ void Draw3DSkyLayer(int layerID)
             YPos += yBuffer;
         }
 
-        if (!(i & 1)) {
-            frameBufferPtr -= SCREEN_XSIZE;
-#if RETRO_PLATFORM == RETRO_PS3
-            frameBufferPtr += (GFX_LINESIZE - SCREEN_XSIZE);
-#endif
-        }
+        frameBufferPtr += (GFX_LINESIZE - SCREEN_XSIZE);
 
-        if (!(i & 1) && !drawStageGFXHQ) {
-            bufferPtr -= SCREEN_XSIZE;
-#if RETRO_PLATFORM == RETRO_PS3
+        if (!drawStageGFXHQ) {
             bufferPtr += (GFX_LINESIZE - SCREEN_XSIZE);
-#endif
+        }
+        else {
+            bufferPtr += (GFX_LINESIZE_DOUBLE - (SCREEN_XSIZE * 2));
         }
     }
 
