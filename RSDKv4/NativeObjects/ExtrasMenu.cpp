@@ -1,61 +1,45 @@
 #include "RetroEngine.hpp"
-#include "String.hpp"
 
 void ExtrasMenu_Create(void *objPtr)
 {
     RSDK_THIS(ExtrasMenu);
-    self->menuControl = (NativeEntity_MenuControl *)GetNativeObject(0);
 
-    self->labelPtr         = CREATE_ENTITY(TextLabel);
-    self->labelPtr->fontID = FONT_HEADING;
-    self->labelPtr->scale  = 0.2;
-    self->labelPtr->alpha  = 0;
-    self->labelPtr->z      = 0;
-    self->labelPtr->state  = TEXTLABEL_STATE_IDLE;
+    self->label                  = CREATE_ENTITY(TextLabel);
+    self->label->useRenderMatrix = true;
+    self->label->fontID          = FONT_HEADING;
+    self->label->scale           = 0.2;
+    self->label->alpha           = 256;
+    self->label->x               = -144.0;
+    self->label->y               = 100.0;
+    self->label->z               = 16.0;
+    self->label->state           = TEXTLABEL_STATE_IDLE;
     if (strExtras)
-        SetStringToFont(self->labelPtr->text, strExtras, FONT_HEADING);
+        SetStringToFont(self->label->text, strExtras, FONT_HEADING);
     else
-        SetStringToFont8(self->labelPtr->text, "EXTRAS", FONT_HEADING);
-    self->labelPtr->alignOffset = 512.0;
+        SetStringToFont8(self->label->text, "EXTRAS", FONT_HEADING);
 
-    self->rotationY = DegreesToRad(22.5);
-    MatrixRotateYF(&self->labelPtr->renderMatrix, self->rotationY);
-    MatrixTranslateXYZF(&self->matrixTemp, -128.0, 80.0, 160.0);
-    MatrixMultiplyF(&self->labelPtr->renderMatrix, &self->matrixTemp);
-    self->labelPtr->useRenderMatrix = true;
+    self->scale      = 0;
+    self->arrowAlpha = 0;
 
-    float y = 48.0;
-    for (int i = 0; i < EXTRASMENU_BUTTON_COUNT; ++i) {
-        self->buttons[i]          = CREATE_ENTITY(SubMenuButton);
-        self->buttons[i]->matXOff = 512.0;
-        self->buttons[i]->textY   = -4.0;
-        self->buttons[i]->matZ    = 0.0;
-        self->buttons[i]->scale   = 0.1;
+    self->meshPanel = LoadMesh("Data/Game/Models/Panel.bin", -1);
+    SetMeshVertexColors(self->meshPanel, 0, 0, 0, 0xC0);
+    self->textureArrows = LoadTexture("Data/Game/Menu/ArrowButtons.png", TEXFMT_RGBA4444);
 
-        self->buttonRotationY = DegreesToRad(16.0);
-        MatrixRotateYF(&self->buttons[i]->matrix, self->buttonRotationY);
-        MatrixTranslateXYZF(&self->matrixTemp, -128.0, y, 160.0);
-        MatrixMultiplyF(&self->buttons[i]->matrix, &self->matrixTemp);
+    float y = 24.0f;
+    const char *names[] = { "STAGE SELECT", "SOUND TEST", "D.A. GARDEN" };
+    for (int i = 0; i < 3; ++i) {
+        self->buttons[i]            = CREATE_ENTITY(SubMenuButton);
+        self->buttons[i]->matZ      = 0.0;
         self->buttons[i]->useMatrix = true;
-        y -= 30.0;
+        self->buttons[i]->scale     = 0.1;
+        self->buttons[i]->textY     = -4.0;
+        if (i == 1 && strSoundTest)
+             SetStringToFont(self->buttons[i]->text, strSoundTest, FONT_LABEL);
+        else
+             SetStringToFont8(self->buttons[i]->text, names[i], FONT_LABEL);
+
+        y -= 30.0f;
     }
-
-    if (strDAGarden)
-        SetStringToFont(self->buttons[EXTRASMENU_BUTTON_DAGARDEN]->text, strDAGarden, FONT_LABEL);
-    else
-        SetStringToFont8(self->buttons[EXTRASMENU_BUTTON_DAGARDEN]->text, "D.A. GARDEN", FONT_LABEL);
-
-    if (strSoundTest)
-        SetStringToFont(self->buttons[EXTRASMENU_BUTTON_SOUNDTEST]->text, strSoundTest, FONT_LABEL);
-    else
-        SetStringToFont8(self->buttons[EXTRASMENU_BUTTON_SOUNDTEST]->text, "SOUND TEST", FONT_LABEL);
-
-    if (strStageSelect)
-        SetStringToFont(self->buttons[EXTRASMENU_BUTTON_STAGESELECT]->text, strStageSelect, FONT_LABEL);
-    else
-        SetStringToFont8(self->buttons[EXTRASMENU_BUTTON_STAGESELECT]->text, "STAGE SELECT", FONT_LABEL);
-
-    self->state = EXTRASMENU_STATE_ENTER;
 }
 
 void ExtrasMenu_Main(void *objPtr)
@@ -64,27 +48,39 @@ void ExtrasMenu_Main(void *objPtr)
 
     switch (self->state) {
         case EXTRASMENU_STATE_ENTER: {
-            self->labelPtr->alignOffset /= (1.125 * (60.0 * Engine.deltaTime));
-            self->timer += (float)(Engine.deltaTime * 2.0);
-            self->labelPtr->alpha = (int)(self->timer * 256.0);
+            if (self->arrowAlpha < 0x100)
+                self->arrowAlpha += 8;
 
-            float div = (float)(60.0 * Engine.deltaTime * 16.0);
-            for (int i = 0; i < EXTRASMENU_BUTTON_COUNT; ++i) {
-                self->buttons[i]->matXOff += ((-176.0 - self->buttons[i]->matXOff) / div);
+            self->scale = fminf(self->scale + ((1.05 - self->scale) / ((60.0 * Engine.deltaTime) * 8.0)), 1.0f);
+
+            NewRenderState();
+            MatrixScaleXYZF(&self->renderMatrix, self->scale, self->scale, 1.0);
+            MatrixTranslateXYZF(&self->matrixTemp, 0.0, 0, 160.0);
+            MatrixMultiplyF(&self->renderMatrix, &self->matrixTemp);
+            SetRenderMatrix(&self->renderMatrix);
+
+            memcpy(&self->label->renderMatrix, &self->renderMatrix, sizeof(MatrixF));
+            float y = 48.0;
+            for (int i = 0; i < 3; ++i) {
+                MatrixRotateYF(&self->buttons[i]->matrix, DegreesToRad(16.0));
+                MatrixTranslateXYZF(&self->matrixTemp, -128.0, y, 160.0);
+                MatrixMultiplyF(&self->buttons[i]->matrix, &self->matrixTemp);
+                MatrixMultiplyF(&self->buttons[i]->matrix, &self->renderMatrix);
+                y -= 30.0;
             }
 
-            if (self->timer > 1.0) {
-                self->timer    = 0.0;
-                self->state    = EXTRASMENU_STATE_MAIN;
-                keyPress.start = false;
-                keyPress.A     = false;
+            self->timer += Engine.deltaTime;
+            if (self->timer > 0.5) {
+                self->arrowAlpha = 0x100;
+                self->timer      = 0.0;
+                self->state      = EXTRASMENU_STATE_MAIN;
             }
             break;
         }
-
         case EXTRASMENU_STATE_MAIN: {
             CheckKeyDown(&keyDown);
             CheckKeyPress(&keyPress);
+            SetRenderMatrix(&self->renderMatrix);
 
             if (usePhysicalControls) {
                 if (touches > 0) {
@@ -93,101 +89,126 @@ void ExtrasMenu_Main(void *objPtr)
                 else {
                     if (keyPress.up) {
                         PlaySfxByName("Menu Move", false);
-                        self->selectedButton--;
-                        if (self->selectedButton < 0)
-                            self->selectedButton = EXTRASMENU_BUTTON_COUNT - 1;
+                        if (--self->selectedButton < 0)
+                            self->selectedButton = 2;
                     }
                     else if (keyPress.down) {
                         PlaySfxByName("Menu Move", false);
-                        self->selectedButton++;
-                        if (self->selectedButton >= EXTRASMENU_BUTTON_COUNT)
+                        if (++self->selectedButton > 2)
                             self->selectedButton = 0;
                     }
 
-                    for (int i = 0; i < EXTRASMENU_BUTTON_COUNT; ++i) self->buttons[i]->b = 0xFF;
+                    for (int i = 0; i < 3; ++i) self->buttons[i]->b = 0xFF;
                     self->buttons[self->selectedButton]->b = 0x00;
 
                     if (keyPress.start || keyPress.A) {
                         PlaySfxByName("Menu Select", false);
-                        self->buttons[self->selectedButton]->state = SUBMENUBUTTON_STATE_FLASHING2;
-                        self->state                                = EXTRASMENU_STATE_ACTION;
+                        StopMusic(true);
+
+                        SetGlobalVariableByName("options.saveSlot", 0);
+                        SetGlobalVariableByName("options.gameMode", 0);
+                        SetGlobalVariableByName("options.vsMode", 0);
+                        SetGlobalVariableByName("player.lives", 3);
+                        SetGlobalVariableByName("player.score", 0);
+                        SetGlobalVariableByName("player.scoreBonus", 50000);
+                        SetGlobalVariableByName("specialStage.listPos", 0);
+                        SetGlobalVariableByName("specialStage.emeralds", 0);
+                        SetGlobalVariableByName("specialStage.nextZone", 0);
+                        SetGlobalVariableByName("timeAttack.result", 0);
+                        SetGlobalVariableByName("lampPostID", 0);
+                        SetGlobalVariableByName("starPostID", 0);
+                        debugMode = false;
+
+                        int id = -1;
+                        switch (self->selectedButton) {
+                            case 0: // Stage Select
+                                id = GetSceneID(STAGELIST_PRESENTATION, "STAGE SELECT");
+                                if (id == -1) id = 5; // Fallback
+                                break;
+                            case 1: // Sound Test
+                                id = GetSceneID(STAGELIST_PRESENTATION, "SOUND TEST");
+                                if (id == -1) id = 6; // Fallback
+                                break;
+                            case 2: // DA Garden
+                                id = GetSceneID(STAGELIST_PRESENTATION, "DA GARDEN");
+                                if (id == -1) id = 4; // Fallback
+                                break;
+                        }
+
+                        if (id != -1) {
+                            BackupNativeObjects();
+                            InitStartingStage(STAGELIST_PRESENTATION, id, 0);
+                            CREATE_ENTITY(FadeScreen);
+                        }
+                    }
+
+                    if (keyPress.B) {
+                        PlaySfxByName("Menu Back", false);
+                        self->backPressed = false;
+                        self->state       = EXTRASMENU_STATE_EXIT;
                     }
                 }
             }
             else {
-                float y = 48.0;
-                for (int i = 0; i < EXTRASMENU_BUTTON_COUNT; ++i) {
-                    if (touches > 0) {
-                        if (CheckTouchRect(-64.0, y, 96.0, 12.0) < 0)
-                            self->buttons[i]->b = 0xFF;
-                        else
+                if (touches > 0) {
+                    self->backPressed = CheckTouchRect(128.0, -92.0, 32.0, 32.0) >= 0;
+
+                    float y = 48.0;
+                    for (int i = 0; i < 3; ++i) {
+                        if (CheckTouchRect(-64.0, y, 96.0, 12.0) >= 0) {
+                            self->selectedButton = i;
+                            for (int j = 0; j < 3; ++j) self->buttons[j]->b = 0xFF;
                             self->buttons[i]->b = 0x00;
+                        }
+                        y -= 30.0;
                     }
-                    else if (!self->buttons[i]->b) {
-                        self->selectedButton = i;
-                        PlaySfxByName("Menu Select", false);
-                        self->buttons[self->selectedButton]->state = SUBMENUBUTTON_STATE_FLASHING2;
-                        self->state                                = EXTRASMENU_STATE_ACTION;
-                        break;
+                }
+                else {
+                    if (self->backPressed || keyPress.B) {
+                        PlaySfxByName("Menu Back", false);
+                        self->backPressed = false;
+                        self->state       = EXTRASMENU_STATE_EXIT;
                     }
-                    y -= 30.0;
                 }
-
-                if (self->state == EXTRASMENU_STATE_MAIN && (keyDown.up || keyDown.down)) {
-                    usePhysicalControls = true;
-                }
-            }
-
-            if (self->menuControl->state == MENUCONTROL_STATE_EXITSUBMENU) {
-                self->state = EXTRASMENU_STATE_EXIT;
             }
             break;
         }
-
-        case EXTRASMENU_STATE_ACTION: {
-            if (self->buttons[self->selectedButton]->state == SUBMENUBUTTON_STATE_IDLE) {
-                SetGlobalVariableByName("options.saveSlot", 0);
-                SetGlobalVariableByName("options.gameMode", 0);
-                SetGlobalVariableByName("player.lives", 3);
-                SetGlobalVariableByName("player.score", 0);
-                SetGlobalVariableByName("player.scoreBonus", 50000);
-                SetGlobalVariableByName("specialStage.emeralds", 0);
-                SetGlobalVariableByName("specialStage.listPos", 0);
-                SetGlobalVariableByName("specialStage.nextZone", 0);
-                SetGlobalVariableByName("timeAttack.result", 0);
-                SetGlobalVariableByName("lampPostID", 0);
-                SetGlobalVariableByName("starPostID", 0);
-
-                int stageID = 0;
-                switch (self->selectedButton) {
-                    case EXTRASMENU_BUTTON_DAGARDEN: stageID = 5; break;
-                    case EXTRASMENU_BUTTON_SOUNDTEST: stageID = 4; break;
-                    case EXTRASMENU_BUTTON_STAGESELECT: stageID = 3; break;
-                }
-
-                BackupNativeObjects();
-                InitStartingStage(STAGELIST_PRESENTATION, stageID, 0);
-                CREATE_ENTITY(FadeScreen);
-                self->state = EXTRASMENU_STATE_SETUP; // just to stop processing
-            }
-            break;
-        }
-
         case EXTRASMENU_STATE_EXIT: {
-            self->timer += (float)(Engine.deltaTime * 2.0);
-            self->labelPtr->alignOffset += (float)(10.0 * (60.0 * Engine.deltaTime));
-            for (int i = 0; i < EXTRASMENU_BUTTON_COUNT; ++i) {
-                self->buttons[i]->matXOff += (float)(11.0 * (60.0 * Engine.deltaTime));
-            }
+            if (self->arrowAlpha > 0)
+                self->arrowAlpha -= 8;
 
-            if (self->timer > 1.0) {
-                self->timer = 0.0;
-                RemoveNativeObject(self->labelPtr);
-                for (int i = 0; i < EXTRASMENU_BUTTON_COUNT; ++i) RemoveNativeObject(self->buttons[i]);
+            if (self->timer < 0.2)
+                self->scale = fmaxf(self->scale + ((1.5f - self->scale) / ((Engine.deltaTime * 60.0) * 8.0)), 0.0);
+            else
+                self->scale = fmaxf(self->scale + ((-1.0f - self->scale) / ((Engine.deltaTime * 60.0) * 8.0)), 0.0);
+
+            NewRenderState();
+            MatrixScaleXYZF(&self->renderMatrix, self->scale, self->scale, 1.0);
+            MatrixTranslateXYZF(&self->matrixTemp, 0.0, 0, 160.0);
+            MatrixMultiplyF(&self->renderMatrix, &self->matrixTemp);
+            SetRenderMatrix(&self->renderMatrix);
+
+            memcpy(&self->label->renderMatrix, &self->renderMatrix, sizeof(MatrixF));
+
+            self->timer += Engine.deltaTime;
+            if (self->timer > 0.5) {
+                NativeEntity_MenuControl *menuControl = (NativeEntity_MenuControl *)GetNativeObject(0);
+                menuControl->state = MENUCONTROL_STATE_EXITSUBMENU;
+                RemoveNativeObject(self->label);
+                for (int i = 0; i < 3; ++i) RemoveNativeObject(self->buttons[i]);
                 RemoveNativeObject(self);
+                return;
             }
             break;
         }
-        default: break;
     }
+
+    RenderMesh(self->meshPanel, MESH_COLORS, false);
+    NewRenderState();
+    SetRenderMatrix(NULL);
+
+    if (self->backPressed)
+        RenderImage(128.0, -92.0, 160.0, 0.3, 0.3, 64.0, 64.0, 128.0, 128.0, 128.0, 128.0, self->arrowAlpha, self->textureArrows);
+    else
+        RenderImage(128.0, -92.0, 160.0, 0.3, 0.3, 64.0, 64.0, 128.0, 128.0, 128.0, 0.0, self->arrowAlpha, self->textureArrows);
 }

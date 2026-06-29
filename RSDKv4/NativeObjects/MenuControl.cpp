@@ -12,33 +12,31 @@ void MenuControl_Create(void *objPtr)
     self->buttonFlags[self->buttonCount] = BUTTON_STARTGAME;
     self->buttonCount++;
 
-    if (Engine.gameType != GAME_SONICCD) {
-        self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(TimeAttackButton);
-        self->buttonFlags[self->buttonCount] = BUTTON_TIMEATTACK;
-        self->buttonCount++;
-    }
-
-#if RETRO_USE_MOD_LOADER
-    int vsID = GetSceneID(STAGELIST_PRESENTATION, "2P VS");
-    if (vsID != -1 || Engine.gameType == GAME_SONICCD) {
-#else
-    if (Engine.gameType == GAME_SONIC2 || Engine.gameType == GAME_SONICCD) {
-#endif
-        self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(MultiplayerButton);
-        self->buttonFlags[self->buttonCount] = BUTTON_MULTIPLAYER;
-        self->buttonCount++;
-    }
-
-
-    self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(OptionsButton);
-    self->buttonFlags[self->buttonCount] = BUTTON_OPTIONS;
-    self->buttonCount++;
-
     if (Engine.gameType == GAME_SONICCD) {
         self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(ExtrasButton);
         self->buttonFlags[self->buttonCount] = BUTTON_EXTRAS;
         self->buttonCount++;
     }
+    else {
+        self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(TimeAttackButton);
+        self->buttonFlags[self->buttonCount] = BUTTON_TIMEATTACK;
+        self->buttonCount++;
+
+#if RETRO_USE_MOD_LOADER
+        int vsID = GetSceneID(STAGELIST_PRESENTATION, "2P VS");
+        if (vsID != -1) {
+#else
+        if (Engine.gameType == GAME_SONIC2) {
+#endif
+            self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(MultiplayerButton);
+            self->buttonFlags[self->buttonCount] = BUTTON_MULTIPLAYER;
+            self->buttonCount++;
+        }
+    }
+
+    self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(OptionsButton);
+    self->buttonFlags[self->buttonCount] = BUTTON_OPTIONS;
+    self->buttonCount++;
 
     self->backButton          = CREATE_ENTITY(BackButton);
     self->backButton->visible = false;
@@ -434,11 +432,11 @@ void MenuControl_Main(void *objPtr)
                         break;
 
                     case BUTTON_EXTRAS:
-                        self->state                  = MENUCONTROL_STATE_ENTERSUBMENU;
-                        self->autoButtonMoveVelocity = 0.0;
-                        button->g                    = 0xFF;
-                        button->labelPtr->state      = TEXTLABEL_STATE_NONE;
-                        self->backButton->visible    = true;
+                        self->state                                    = MENUCONTROL_STATE_ENTERSUBMENU;
+                        self->autoButtonMoveVelocity                   = 0.0;
+                        button->g                                      = 0xFF;
+                        self->buttons[self->buttonID]->labelPtr->state = TEXTLABEL_STATE_NONE;
+                        self->backButton->visible                      = true;
                         CREATE_ENTITY(ExtrasMenu);
                         break;
 

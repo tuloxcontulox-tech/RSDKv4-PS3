@@ -1,34 +1,20 @@
 #ifndef NATIVE_EXTRASMENU_H
 #define NATIVE_EXTRASMENU_H
 
-enum ExtrasMenuButtons {
-    EXTRASMENU_BUTTON_DAGARDEN,
-    EXTRASMENU_BUTTON_SOUNDTEST,
-    EXTRASMENU_BUTTON_STAGESELECT,
-    EXTRASMENU_BUTTON_COUNT,
-};
-
-enum ExtrasMenuStates {
-    EXTRASMENU_STATE_SETUP,
-    EXTRASMENU_STATE_ENTER,
-    EXTRASMENU_STATE_MAIN,
-    EXTRASMENU_STATE_EXIT,
-    EXTRASMENU_STATE_ACTION,
-};
+enum ExtrasMenuStates { EXTRASMENU_STATE_ENTER, EXTRASMENU_STATE_MAIN, EXTRASMENU_STATE_EXIT };
 
 struct NativeEntity_ExtrasMenu : NativeEntityBase {
     ExtrasMenuStates state;
     float timer;
-    NativeEntity_MenuControl *menuControl;
-    NativeEntity_TextLabel *labelPtr;
-    NativeEntity_SubMenuButton *buttons[EXTRASMENU_BUTTON_COUNT];
+    float scale;
+    int arrowAlpha;
     int selectedButton;
-    float rotationY;
-    float buttonRotationY;
-    float rotationYVel;
-    float buttonRotationYVelocity;
-    float targetRotationY;
-    float targetButtonRotationY;
+    bool backPressed;
+    NativeEntity_TextLabel *label;
+    NativeEntity_SubMenuButton *buttons[3];
+    MeshInfo *meshPanel;
+    int textureArrows;
+    MatrixF renderMatrix;
     MatrixF matrixTemp;
 };
 
