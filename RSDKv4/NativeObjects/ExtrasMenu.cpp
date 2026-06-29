@@ -21,7 +21,7 @@ void ExtrasMenu_Create(void *objPtr)
     self->scale      = 0;
     self->arrowAlpha = 0;
 
-    self->meshPanel = LoadMesh("Data/Game/Models/Panel.bin", -1);
+    self->meshPanel = LoadMesh("Data/Game/Models/Panel.bin", 255);
     SetMeshVertexColors(self->meshPanel, 0, 0, 0, 0xC0);
     self->textureArrows = LoadTexture("Data/Game/Menu/ArrowButtons.png", TEXFMT_RGBA4444);
 

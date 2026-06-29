@@ -75,6 +75,7 @@ extern ushort *strHelpText5;
 extern ushort *strVersionName;
 extern ushort *strPrivacy;
 extern ushort *strTerms;
+extern ushort *strExtras;
 
 extern int stageStrCount;
 

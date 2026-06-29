@@ -65,6 +65,7 @@ ushort *strHelpText5     = NULL;
 ushort *strVersionName   = NULL;
 ushort *strPrivacy       = NULL;
 ushort *strTerms         = NULL;
+ushort *strExtras        = NULL;
 
 int stageStrCount = 0;
 
@@ -360,6 +361,7 @@ void InitLocalizedStrings()
     strVersionName   = ReadLocalizedString("Version", langStr, "Data/Game/StringList.txt", infoPtr);
     strPrivacy       = ReadLocalizedString("Privacy", langStr, "Data/Game/StringList.txt", infoPtr);
     strTerms         = ReadLocalizedString("Terms", langStr, "Data/Game/StringList.txt", infoPtr);
+    strExtras        = ReadLocalizedString("Extras", langStr, "Data/Game/StringList.txt", infoPtr);
     // strMoreGames         = ReadLocalizedString("MoreGames", langStr, "Data/Game/StringList.txt", infoPtr);
 
     // Video Filter options
