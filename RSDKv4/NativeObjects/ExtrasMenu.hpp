@@ -14,6 +14,8 @@ struct NativeEntity_ExtrasMenu : NativeEntityBase {
     NativeEntity_SubMenuButton *buttons[3];
     MeshInfo *meshPanel;
     int textureArrows;
+    int textureCircle;
+    int textureExtras;
     MatrixF renderMatrix;
     MatrixF matrixTemp;
 };

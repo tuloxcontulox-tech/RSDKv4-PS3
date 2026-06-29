@@ -24,21 +24,20 @@ void ExtrasMenu_Create(void *objPtr)
     self->meshPanel = LoadMesh("Data/Game/Models/Panel.bin", 255);
     SetMeshVertexColors(self->meshPanel, 0, 0, 0, 0xC0);
     self->textureArrows = LoadTexture("Data/Game/Menu/ArrowButtons.png", TEXFMT_RGBA4444);
+    self->textureCircle = LoadTexture("Data/Game/Menu/Circle.png", TEXFMT_RGBA4444);
+    self->textureExtras = LoadTexture("Data/Game/Models/Extras.png", TEXFMT_RGBA4444);
 
-    float y = 24.0f;
-    const char *names[] = { "STAGE SELECT", "SOUND TEST", "D.A. GARDEN" };
+    float y = 44.0f;
+    const char *names[] = { "STAGE SELECT", "PRUEBA DE SONIDO", "D.A. GARDEN" };
     for (int i = 0; i < 3; ++i) {
         self->buttons[i]            = CREATE_ENTITY(SubMenuButton);
         self->buttons[i]->matZ      = 0.0;
         self->buttons[i]->useMatrix = true;
         self->buttons[i]->scale     = 0.1;
         self->buttons[i]->textY     = -4.0;
-        if (i == 1 && strSoundTest)
-             SetStringToFont(self->buttons[i]->text, strSoundTest, FONT_LABEL);
-        else
-             SetStringToFont8(self->buttons[i]->text, names[i], FONT_LABEL);
+        SetStringToFont8(self->buttons[i]->text, names[i], FONT_LABEL);
 
-        y -= 30.0f;
+        y -= 24.0f;
     }
 }
 
@@ -60,13 +59,13 @@ void ExtrasMenu_Main(void *objPtr)
             SetRenderMatrix(&self->renderMatrix);
 
             memcpy(&self->label->renderMatrix, &self->renderMatrix, sizeof(MatrixF));
-            float y = 48.0;
+            float y = 44.0;
             for (int i = 0; i < 3; ++i) {
                 MatrixRotateYF(&self->buttons[i]->matrix, DegreesToRad(16.0));
-                MatrixTranslateXYZF(&self->matrixTemp, -128.0, y, 160.0);
+                MatrixTranslateXYZF(&self->matrixTemp, -100.0, y, 160.0);
                 MatrixMultiplyF(&self->buttons[i]->matrix, &self->matrixTemp);
                 MatrixMultiplyF(&self->buttons[i]->matrix, &self->renderMatrix);
-                y -= 30.0;
+                y -= 24.0;
             }
 
             self->timer += Engine.deltaTime;
@@ -80,6 +79,11 @@ void ExtrasMenu_Main(void *objPtr)
         case EXTRASMENU_STATE_MAIN: {
             CheckKeyDown(&keyDown);
             CheckKeyPress(&keyPress);
+
+            NewRenderState();
+            MatrixScaleXYZF(&self->renderMatrix, self->scale, self->scale, 1.0);
+            MatrixTranslateXYZF(&self->matrixTemp, 0.0, 0, 160.0);
+            MatrixMultiplyF(&self->renderMatrix, &self->matrixTemp);
             SetRenderMatrix(&self->renderMatrix);
 
             if (usePhysicalControls) {
@@ -99,7 +103,7 @@ void ExtrasMenu_Main(void *objPtr)
                     }
 
                     for (int i = 0; i < 3; ++i) self->buttons[i]->b = 0xFF;
-                    self->buttons[self->selectedButton]->b = 0x00;
+                    self->buttons[self->selectedButton]->b = 0x0;
 
                     if (keyPress.start || keyPress.A) {
                         PlaySfxByName("Menu Select", false);
@@ -153,14 +157,14 @@ void ExtrasMenu_Main(void *objPtr)
                 if (touches > 0) {
                     self->backPressed = CheckTouchRect(128.0, -92.0, 32.0, 32.0) >= 0;
 
-                    float y = 48.0;
+                    float y = 44.0;
                     for (int i = 0; i < 3; ++i) {
-                        if (CheckTouchRect(-64.0, y, 96.0, 12.0) >= 0) {
+                        if (CheckTouchRect(-40.0, y, 96.0, 12.0) >= 0) {
                             self->selectedButton = i;
                             for (int j = 0; j < 3; ++j) self->buttons[j]->b = 0xFF;
-                            self->buttons[i]->b = 0x00;
+                            self->buttons[i]->b = 0x0;
                         }
-                        y -= 30.0;
+                        y -= 24.0;
                     }
                 }
                 else {
@@ -204,6 +208,20 @@ void ExtrasMenu_Main(void *objPtr)
     }
 
     RenderMesh(self->meshPanel, MESH_COLORS, false);
+
+    SetRenderBlendMode(RENDER_BLEND_ALPHA);
+    SetRenderVertexColor(0xFF, 0xFF, 0x00);
+    RenderImage(120.0, 48.0, 0.0, 0.2, 0.2, 256.0, 256.0, 512.0, 512.0, 0.0, 0.0, 255, self->textureCircle);
+    RenderImage(128.0, -84.0, 0.0, 0.1, 0.1, 256.0, 256.0, 512.0, 512.0, 0.0, 0.0, 255, self->textureCircle);
+    SetRenderVertexColor(0xFF, 0xFF, 0xFF);
+
+    NewRenderState();
+    MatrixRotateYF(&self->matrixTemp, DegreesToRad(-16.0));
+    MatrixTranslateXYZF(&self->renderMatrix, 120.0, 48.0, 160.0);
+    MatrixMultiplyF(&self->renderMatrix, &self->matrixTemp);
+    SetRenderMatrix(&self->renderMatrix);
+    RenderImage(0.0, 0.0, 0.0, 0.3, 0.3, 256.0, 256.0, 512.0, 512.0, 0.0, 0.0, 255, self->textureExtras);
+
     NewRenderState();
     SetRenderMatrix(NULL);
 

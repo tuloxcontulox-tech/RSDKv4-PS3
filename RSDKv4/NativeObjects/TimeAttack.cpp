@@ -21,6 +21,12 @@ void TimeAttack_Create(void *objPtr)
         // GHZ-SBZ + FZ
         actCount = (timeAttack_ZoneCount * timeAttack_ActCount) + 1;
     }
+    else if (Engine.gameType == GAME_SONICCD) {
+        timeAttack_ZoneCount   = 7;
+        timeAttack_ActCount    = 3;
+        timeAttack_ExZoneCount = 0;
+        actCount               = timeAttack_ZoneCount * timeAttack_ActCount;
+    }
     else {
         timeAttack_ZoneCount = 11;
 #if !RETRO_USE_ORIGINAL_CODE
@@ -100,6 +106,10 @@ void TimeAttack_Create(void *objPtr)
             for (int a = 0; a < timeAttack_ActCount; ++a) self->totalTime += saveGame->records[3 * (pos + a)];
             pos += timeAttack_ActCount;
         }
+        else if (Engine.gameType == GAME_SONICCD) {
+            for (int a = 0; a < timeAttack_ActCount; ++a) self->totalTime += saveGame->records[3 * (pos + a)];
+            pos += timeAttack_ActCount;
+        }
         else {
             if (z == 7) { // metropolis
                 for (int a = 0; a < 3; ++a) self->totalTime += saveGame->records[3 * (pos + a)];
@@ -167,6 +177,10 @@ void TimeAttack_Create(void *objPtr)
             for (int a = 0; a < timeAttack_ActCount; ++a) self->totalTime += saveGame->records[3 * (pos + a)];
             pos += timeAttack_ActCount;
         }
+        else if (Engine.gameType == GAME_SONICCD) {
+            for (int a = 0; a < timeAttack_ActCount; ++a) self->totalTime += saveGame->records[3 * (pos + a)];
+            pos += timeAttack_ActCount;
+        }
         else {
             if (z == 7) { // metropolis
                 for (int a = 0; a < 3; ++a) self->totalTime += saveGame->records[3 * (pos + a)];
@@ -206,7 +220,7 @@ void TimeAttack_Create(void *objPtr)
         self->zoneButtons[i]->texX     = tx;
         self->zoneButtons[i]->texY     = ty;
         self->zoneButtons[i]->unlocked = false;
-        if (zone > timeAttack_ActCount * (i + 1)) {
+        if (zone >= timeAttack_ActCount * (i + 1)) {
             self->zoneButtons[i]->unlocked = true;
         }
 
@@ -225,6 +239,13 @@ void TimeAttack_Create(void *objPtr)
                 ty -= 240.0f;
             }
 
+            tx += 320.0f;
+            if (tx >= 960.0f) {
+                tx = 120.0f;
+                ty += 240.0f;
+            }
+        }
+        else if (Engine.gameType == GAME_SONICCD) {
             tx += 320.0f;
             if (tx >= 960.0f) {
                 tx = 120.0f;
