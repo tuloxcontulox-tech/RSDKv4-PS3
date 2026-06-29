@@ -12,16 +12,11 @@ void MenuControl_Create(void *objPtr)
     self->buttonFlags[self->buttonCount] = BUTTON_STARTGAME;
     self->buttonCount++;
 
-    if (Engine.gameType == GAME_SONICCD) {
-        self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(ExtrasButton);
-        self->buttonFlags[self->buttonCount] = BUTTON_EXTRAS;
-        self->buttonCount++;
-    }
-    else {
-        self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(TimeAttackButton);
-        self->buttonFlags[self->buttonCount] = BUTTON_TIMEATTACK;
-        self->buttonCount++;
+    self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(TimeAttackButton);
+    self->buttonFlags[self->buttonCount] = BUTTON_TIMEATTACK;
+    self->buttonCount++;
 
+    if (Engine.gameType != GAME_SONICCD) {
 #if RETRO_USE_MOD_LOADER
         int vsID = GetSceneID(STAGELIST_PRESENTATION, "2P VS");
         if (vsID != -1) {
@@ -37,6 +32,12 @@ void MenuControl_Create(void *objPtr)
     self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(OptionsButton);
     self->buttonFlags[self->buttonCount] = BUTTON_OPTIONS;
     self->buttonCount++;
+
+    if (Engine.gameType == GAME_SONICCD) {
+        self->buttons[self->buttonCount]     = (NativeEntity_AchievementsButton *)CREATE_ENTITY(ExtrasButton);
+        self->buttonFlags[self->buttonCount] = BUTTON_EXTRAS;
+        self->buttonCount++;
+    }
 
     self->backButton          = CREATE_ENTITY(BackButton);
     self->backButton->visible = false;

@@ -5,8 +5,8 @@ void ExtrasButton_Create(void *objPtr)
     RSDK_THIS(ExtrasButton);
     self->textureCircle = LoadTexture("Data/Game/Menu/Circle.png", TEXFMT_RGBA4444);
 
-    int texture          = LoadTexture("Data/Game/Models/SonicCD.png", TEXFMT_RGBA4444);
-    self->meshCartridge = LoadMesh("Data/Game/Models/JPCartdridge.bin", texture);
+    int texture          = LoadTexture("Data/Game/Models/Extras.png", TEXFMT_RGBA4444);
+    self->meshCartridge = LoadMesh("Data/Game/Models/Extras.bin", texture);
     self->x              = 0.0;
     self->y              = 16.0;
     self->z              = 160.0;
