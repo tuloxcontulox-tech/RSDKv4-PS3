@@ -333,25 +333,28 @@ void SetRenderVertexColor(byte r, byte g, byte b)
 #undef far
 void SetPerspectiveMatrix(float w, float h, float near, float far)
 {
-    float m[19];
+    float m[16];
 
     float val = tanf((float)(0.017453292f * w) * 0.5f);
-    m[11]     = 1.0;
     m[0]      = 1.0 / val;
     m[1]      = 0.0;
     m[2]      = 0.0;
     m[3]      = 0.0;
+
     m[4]      = 0.0;
+    m[5]      = 1.0 / (val * h);
     m[6]      = 0.0;
     m[7]      = 0.0;
+
     m[8]      = 0.0;
     m[9]      = 0.0;
+    m[10]     = (far + near) / (far - near);
+    m[11]     = 1.0;
+
     m[12]     = 0.0;
     m[13]     = 0.0;
-    m[15]     = 0.0;
-    m[5]      = 1.0 / (val * h);
-    m[10]     = (far + near) / (far - near);
     m[14]     = -((far + far) * near) / (far - near);
+    m[15]     = 0.0;
 #if RETRO_USING_OPENGL
     glMultMatrixf(m);
 #endif
@@ -424,7 +427,7 @@ void RenderScene()
 
     if (dimAmount < 1.0) {
         SetRenderBlendMode(RENDER_BLEND_ALPHA);
-        RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 0, 0, 0, 0xFF - (dimAmount * 0xFF));
+        RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 0, 0, 0, (int)(0xFF - (dimAmount * 0xFF)));
         SetRenderBlendMode(RENDER_BLEND_NONE);
     }
 #endif
@@ -617,8 +620,8 @@ void RenderScene()
         }
 
 #if RETRO_USING_OPENGL
-        if (state->useFilter && cgContext) {
 #if RETRO_PLATFORM == RETRO_PS3
+        if (state->useFilter && cgContext) {
             CGprogram vProg = cgVertexProgram;
             CGprogram fProg = cgFragmentProgram;
 
@@ -716,12 +719,12 @@ void RenderScene()
 
         glDrawElements(GL_TRIANGLES, state->indexCount, GL_UNSIGNED_SHORT, state->indexPtr);
 
-        if (state->useFilter && cgContext) {
 #if RETRO_PLATFORM == RETRO_PS3
+        if (state->useFilter && cgContext) {
             cgGLDisableProfile(cgVertexProfile);
             cgGLDisableProfile(cgFragmentProfile);
-#endif
         }
+#endif
 #endif
     }
 

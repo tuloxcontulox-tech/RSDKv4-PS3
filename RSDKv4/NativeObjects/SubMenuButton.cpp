@@ -99,12 +99,25 @@ void SubMenuButton_Main(void *objPtr)
             uint emeraldColorsS2[] = {
                 0x00C0FF, 0x8000C0, 0xFF0000, 0xFF60FF, 0xFFC000, 0x60C000, 0xFFFFFF,
             };
+            uint emeraldColorsSCD[] = { 0x60C000, 0xFFC000, 0xFFFF00, 0x0000FF, 0x00C0FF, 0x8000C0, 0xFF0000, 0xFFFFFF };
 
-            float x = -60.0f;
-            for (int i = 0; i < (Engine.gameType == GAME_SONIC1 ? 6 : 7); ++i) {
+            int count = 7;
+            float x   = -60.0f;
+            if (Engine.gameType == GAME_SONIC1) {
+                count = 6;
+                x     = -40.0f;
+            }
+            else if (Engine.gameType == GAME_SONICCD) {
+                count = 8;
+                x     = -56.0f;
+            }
+
+            for (int i = 0; i < count; ++i) {
                 if (self->flags & (1 << i)) {
                     if (Engine.gameType == GAME_SONIC1)
                         SetRenderVertexColor((emeraldColorsS1[i] >> 16) & 0xFF, (emeraldColorsS1[i] >> 8) & 0xFF, emeraldColorsS1[i] & 0xFF);
+                    else if (Engine.gameType == GAME_SONICCD)
+                        SetRenderVertexColor((emeraldColorsSCD[i] >> 16) & 0xFF, (emeraldColorsSCD[i] >> 8) & 0xFF, emeraldColorsSCD[i] & 0xFF);
                     else
                         SetRenderVertexColor((emeraldColorsS2[i] >> 16) & 0xFF, (emeraldColorsS2[i] >> 8) & 0xFF, emeraldColorsS2[i] & 0xFF);
                     RenderImage(x, -6.0, 0.0, 0.125, 0.125, 28.0, 35.0, 56.0, 70.0, 188.0, 0.0, 255, self->textureSymbols);

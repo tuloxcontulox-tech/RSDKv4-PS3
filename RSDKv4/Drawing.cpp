@@ -269,8 +269,8 @@ int InitRenderDevice()
 
         float aspect            = SCREEN_XSIZE_CONFIG / (float)SCREEN_YSIZE;
         displaySettings.height  = h;
-        displaySettings.width   = aspect * displaySettings.height;
-        displaySettings.offsetX = abs((int)w - displaySettings.width) / 2;
+        displaySettings.width   = (int)(aspect * displaySettings.height);
+        displaySettings.offsetX = (int)(abs((int)w - displaySettings.width) / 2);
         if (displaySettings.width > w) {
             displaySettings.offsetX = 0;
             displaySettings.width   = w;
@@ -753,8 +753,8 @@ void SetScreenDimensions(int width, int height)
 
         double aspect           = SCREEN_XSIZE_CONFIG / (float)SCREEN_YSIZE;
         displaySettings.height  = h;
-        displaySettings.width   = aspect * displaySettings.height;
-        displaySettings.offsetX = abs((int)w - displaySettings.width) / 2;
+        displaySettings.width   = (int)(aspect * displaySettings.height);
+        displaySettings.offsetX = (int)(abs((int)w - displaySettings.width) / 2);
         if (displaySettings.width > w) {
             displaySettings.offsetX = 0;
             displaySettings.width   = w;
@@ -927,8 +927,8 @@ void SetupViewport()
 
         double aspect           = SCREEN_XSIZE_CONFIG / (float)SCREEN_YSIZE;
         displaySettings.height  = h;
-        displaySettings.width   = aspect * displaySettings.height;
-        displaySettings.offsetX = abs((int)w - (int)displaySettings.width) / 2;
+        displaySettings.width   = (int)(aspect * displaySettings.height);
+        displaySettings.offsetX = (int)(abs((int)w - (int)displaySettings.width) / 2);
         if (displaySettings.width > (float)w) {
             displaySettings.offsetX = 0;
             displaySettings.width   = w;
@@ -2855,8 +2855,8 @@ void Draw3DFloorLayer(int layerID)
     int layerHeight        = layer->ysize << 7;
     int layerYPos          = layer->ypos;
     int layerZPos          = layer->zpos;
-    int sinValue           = sinM7LookupTable[layer->angle];
-    int cosValue           = cosM7LookupTable[layer->angle];
+    int sinValue           = sinM7LookupTable[layer->angle & 0x1FF];
+    int cosValue           = cosM7LookupTable[layer->angle & 0x1FF];
     byte *gfxLineBufferPtr = &gfxLineBuffer[(SCREEN_YSIZE / 2) + 12];
     ushort *frameBufferPtr = &Engine.frameBuffer[((SCREEN_YSIZE / 2) + 12) * GFX_LINESIZE];
     int layerXPos          = layer->xpos >> 4;
@@ -2867,12 +2867,15 @@ void Draw3DFloorLayer(int layerID)
             activePalette32 = fullPalette32[*gfxLineBufferPtr];
             gfxLineBufferPtr++;
         }
-        int XBuffer    = layerYPos / (i << 9) * -cosValue >> 8;
-        int YBuffer    = sinValue * (layerYPos / (i << 9)) >> 8;
-        int XPos       = layerXPos + (3 * sinValue * (layerYPos / (i << 9)) >> 2) - XBuffer * SCREEN_CENTERX;
-        int YPos       = ZBuffer + (3 * cosValue * (layerYPos / (i << 9)) >> 2) - YBuffer * SCREEN_CENTERX;
+
+        int invI    = layerYPos / (i << 9);
+        int XBuffer = invI * -cosValue >> 8;
+        int YBuffer = sinValue * invI >> 8;
+        int XPos    = layerXPos + (3 * sinValue * invI >> 2) - XBuffer * (SCREEN_XSIZE / 2);
+        int YPos    = ZBuffer + (3 * cosValue * invI >> 2) - YBuffer * (SCREEN_XSIZE / 2);
+
         int lineBuffer = 0;
-        while (lineBuffer < GFX_LINESIZE) {
+        while (lineBuffer < SCREEN_XSIZE) {
             int tileX = XPos >> 12;
             int tileY = YPos >> 12;
             if (tileX > -1 && tileX < layerWidth && tileY > -1 && tileY < layerHeight) {
@@ -2881,8 +2884,8 @@ void Draw3DFloorLayer(int layerID)
                 switch (tiles128x128.direction[chunk]) {
                     case FLIP_NONE: tilePixel += 16 * (tileY & 0xF) + (tileX & 0xF); break;
                     case FLIP_X: tilePixel += 16 * (tileY & 0xF) + 15 - (tileX & 0xF); break;
-                    case FLIP_Y: tilePixel += (tileX & 0xF) + SCREEN_YSIZE - 16 * (tileY & 0xF); break;
-                    case FLIP_XY: tilePixel += 15 - (tileX & 0xF) + SCREEN_YSIZE - 16 * (tileY & 0xF); break;
+                    case FLIP_Y: tilePixel += (tileX & 0xF) + 240 - 16 * (tileY & 0xF); break;
+                    case FLIP_XY: tilePixel += 15 - (tileX & 0xF) + 240 - 16 * (tileY & 0xF); break;
                     default: break;
                 }
 
@@ -2894,6 +2897,7 @@ void Draw3DFloorLayer(int layerID)
             XPos += XBuffer;
             YPos += YBuffer;
         }
+        frameBufferPtr += (GFX_LINESIZE - SCREEN_XSIZE);
     }
 #endif
 }
@@ -2922,12 +2926,15 @@ void Draw3DSkyLayer(int layerID)
             activePalette32 = fullPalette32[*gfxLineBufferPtr];
             gfxLineBufferPtr++;
         }
-        int xBuffer    = layerYPos / (i << 8) * -cosValue >> 9;
-        int yBuffer    = sinValue * (layerYPos / (i << 8)) >> 9;
-        int XPos       = layerXPos + (3 * sinValue * (layerYPos / (i << 8)) >> 2) - xBuffer * GFX_LINESIZE;
-        int YPos       = layerZPos + (3 * cosValue * (layerYPos / (i << 8)) >> 2) - yBuffer * GFX_LINESIZE;
+
+        int invI    = layerYPos / (i << 8);
+        int xBuffer = invI * -cosValue >> 9;
+        int yBuffer = sinValue * invI >> 9;
+        int XPos    = layerXPos + (3 * sinValue * invI >> 2) - xBuffer * SCREEN_XSIZE;
+        int YPos    = layerZPos + (3 * cosValue * invI >> 2) - yBuffer * SCREEN_XSIZE;
+
         int lineBuffer = 0;
-        while (lineBuffer < GFX_LINESIZE * 2) {
+        while (lineBuffer < SCREEN_XSIZE * 2) {
             int tileX = XPos >> 12;
             int tileY = YPos >> 12;
             if (tileX > -1 && tileX < layerWidth && tileY > -1 && tileY < layerHeight) {
@@ -2936,8 +2943,8 @@ void Draw3DSkyLayer(int layerID)
                 switch (tiles128x128.direction[chunk]) {
                     case FLIP_NONE: tilePixel += TILE_SIZE * (tileY & 0xF) + (tileX & 0xF); break;
                     case FLIP_X: tilePixel += TILE_SIZE * (tileY & 0xF) + 0xF - (tileX & 0xF); break;
-                    case FLIP_Y: tilePixel += (tileX & 0xF) + SCREEN_YSIZE - TILE_SIZE * (tileY & 0xF); break;
-                    case FLIP_XY: tilePixel += 0xF - (tileX & 0xF) + SCREEN_YSIZE - TILE_SIZE * (tileY & 0xF); break;
+                    case FLIP_Y: tilePixel += (tileX & 0xF) + 240 - TILE_SIZE * (tileY & 0xF); break;
+                    case FLIP_XY: tilePixel += 0xF - (tileX & 0xF) + 240 - TILE_SIZE * (tileY & 0xF); break;
                     default: break;
                 }
 
@@ -2963,11 +2970,14 @@ void Draw3DSkyLayer(int layerID)
             YPos += yBuffer;
         }
 
-        if (!(i & 1))
-            frameBufferPtr -= GFX_LINESIZE;
+        frameBufferPtr += (GFX_LINESIZE - SCREEN_XSIZE);
 
-        if (!(i & 1) && !drawStageGFXHQ)
-            bufferPtr -= GFX_LINESIZE;
+        if (!drawStageGFXHQ) {
+            bufferPtr += (GFX_LINESIZE - SCREEN_XSIZE);
+        }
+        else {
+            bufferPtr += (GFX_LINESIZE_DOUBLE - (SCREEN_XSIZE * 2));
+        }
     }
 
     if (drawStageGFXHQ) {

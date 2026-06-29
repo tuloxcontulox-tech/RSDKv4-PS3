@@ -24,7 +24,7 @@ set(RETRO_NAME "RSDKv4")
 set(RETRO_OUTPUT_NAME ${RETRO_NAME} CACHE STRING "The exported name of the executable.")
 
 set(RETRO_FILES
-    dependencies/all/tinyxml2/tinyxml2.cpp
+    dependencies/all/pugixml/src/pugixml.cpp
     RSDKv4/Animation.cpp
     RSDKv4/Audio.cpp
     RSDKv4/Collision.cpp
@@ -57,6 +57,8 @@ set(RETRO_FILES
     RSDKv4/NativeObjects/CWSplash.cpp
     RSDKv4/NativeObjects/CreditText.cpp
     RSDKv4/NativeObjects/DialogPanel.cpp
+    RSDKv4/NativeObjects/ExtrasButton.cpp
+    RSDKv4/NativeObjects/ExtrasMenu.cpp
     RSDKv4/NativeObjects/FadeScreen.cpp
     RSDKv4/NativeObjects/InstructionsScreen.cpp
     RSDKv4/NativeObjects/LeaderboardsButton.cpp
@@ -167,7 +169,7 @@ target_include_directories(RetroEngine PRIVATE
     RSDKv4/
     RSDKv4/NativeObjects/
     dependencies/all/stb-image/
-    dependencies/all/tinyxml2/
+    dependencies/all/pugixml/src/
 )
 
 if(RETRO_NETWORKING)

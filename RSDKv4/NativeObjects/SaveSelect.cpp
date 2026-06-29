@@ -50,12 +50,25 @@ void SaveSelect_Create(void *objPtr)
     ReadSaveRAMData();
 
     float y = 18.0;
+    float ySpacing = 30.0;
+    if (Engine.gameType == GAME_SONICCD)
+        ySpacing = 24.0;
+
     for (int i = SAVESELECT_BUTTON_SAVE1; i < SAVESELECT_BUTTON_COUNT; ++i) {
         self->saveButtons[i] = CREATE_ENTITY(SubMenuButton);
 
-        int stagePos = saveGame->files[i - 1].stageID;
+        int stagePos       = saveGame->files[i - 1].stageID;
+        int specialStageID = saveGame->files[i - 1].specialStageID;
+        int characterID    = saveGame->files[i - 1].characterID;
+        int emeralds       = saveGame->files[i - 1].emeralds;
+
         if (stagePos >= 0x80) {
-            SetStringToFont(self->saveButtons[i]->text, strSaveStageList[saveGame->files[i - 1].specialStageID + 19], FONT_LABEL);
+            int textID = 0;
+            if (Engine.gameType == GAME_SONICCD)
+                textID = specialStageID + 32;
+            else
+                textID = specialStageID + 19;
+            SetStringToFont(self->saveButtons[i]->text, strSaveStageList[textID], FONT_LABEL);
             self->saveButtons[i]->state = SUBMENUBUTTON_STATE_SAVEBUTTON_SELECTED;
             self->saveButtons[i]->textY = 2.0;
             self->saveButtons[i]->scale = 0.08;
@@ -79,14 +92,14 @@ void SaveSelect_Create(void *objPtr)
 
         self->saveButtons[i]->matXOff = 512.0;
         self->saveButtons[i]->matZ    = 0.0;
-        self->saveButtons[i]->symbol  = saveGame->files[i - 1].characterID;
-        self->saveButtons[i]->flags   = saveGame->files[i - 1].emeralds;
+        self->saveButtons[i]->symbol  = characterID;
+        self->saveButtons[i]->flags   = emeralds;
         self->rotateY[i]              = DegreesToRad(16.0);
         MatrixRotateYF(&self->saveButtons[i]->matrix, self->rotateY[i]);
         MatrixTranslateXYZF(&self->matrix1, -128.0, y, 160.0);
         MatrixMultiplyF(&self->saveButtons[i]->matrix, &self->matrix1);
         self->saveButtons[i]->useMatrix = true;
-        y -= 30.0;
+        y -= ySpacing;
     }
 }
 void SaveSelect_Main(void *objPtr)
@@ -223,6 +236,10 @@ void SaveSelect_Main(void *objPtr)
             }
             else {
                 float y = 48.0;
+                float ySpacing = 30.0;
+                if (Engine.gameType == GAME_SONICCD)
+                    ySpacing = 24.0;
+
                 for (int i = 0; i < SAVESELECT_BUTTON_COUNT; ++i) {
                     if (touches > 0) {
                         if (CheckTouchRect(-64.0, y, 96.0, 12.0) < 0)
@@ -253,7 +270,7 @@ void SaveSelect_Main(void *objPtr)
 
                         break;
                     }
-                    y -= 30.0;
+                    y -= ySpacing;
                 }
 
                 if (self->state == SAVESELECT_STATE_MAIN) {
@@ -367,7 +384,10 @@ void SaveSelect_Main(void *objPtr)
                             InitStartingStage(STAGELIST_SPECIAL, saveGame->files[saveSlot].specialStageID, saveGame->files[saveSlot].characterID);
                         }
                         else {
-                            SetGlobalVariableByName("specialStage.nextZone", saveGame->files[saveSlot].stageID - 1);
+                            if (Engine.gameType == GAME_SONICCD)
+                                SetGlobalVariableByName("specialStage.nextZone", saveGame->files[saveSlot].stageID);
+                            else
+                                SetGlobalVariableByName("specialStage.nextZone", saveGame->files[saveSlot].stageID - 1);
                             InitStartingStage(STAGELIST_REGULAR, saveGame->files[saveSlot].stageID - 1, saveGame->files[saveSlot].characterID);
                         }
                         CREATE_ENTITY(FadeScreen);
@@ -411,6 +431,10 @@ void SaveSelect_Main(void *objPtr)
             }
 
             float y = 48.0;
+            float ySpacing = 30.0;
+            if (Engine.gameType == GAME_SONICCD)
+                ySpacing = 24.0;
+
             for (int i = 0; i < SAVESELECT_BUTTON_COUNT; ++i) {
                 if (self->rotateY[i] > self->targetRotateY[i]) {
                     self->rotateYVelocity[i] -= 0.0025 * (60.0 * Engine.deltaTime);
@@ -421,7 +445,7 @@ void SaveSelect_Main(void *objPtr)
                     MatrixTranslateXYZF(&self->matrix1, -128.0, y, 160.0);
                     MatrixMultiplyF(&self->saveButtons[i]->matrix, &self->matrix1);
                 }
-                y -= 30.0;
+                y -= ySpacing;
             }
 
             if (self->targetRotateY[SAVESELECT_BUTTON_COUNT - 1] >= self->rotateY[SAVESELECT_BUTTON_COUNT - 1]) {
@@ -463,6 +487,10 @@ void SaveSelect_Main(void *objPtr)
             }
 
             float y = 48.0;
+            float ySpacing = 30.0;
+            if (Engine.gameType == GAME_SONICCD)
+                ySpacing = 24.0;
+
             for (int i = 0; i < SAVESELECT_BUTTON_COUNT; ++i) {
                 if (self->targetRotateY[i] > self->rotateY[i]) {
                     self->rotateYVelocity[i] += 0.0025 * (60.0 * Engine.deltaTime);
@@ -476,7 +504,7 @@ void SaveSelect_Main(void *objPtr)
                     MatrixTranslateXYZF(&self->matrix1, -128.0, y, 160.0);
                     MatrixMultiplyF(&self->saveButtons[i]->matrix, &self->matrix1);
                 }
-                y -= 30.0;
+                y -= ySpacing;
             }
 
             float div                               = (60.0 * Engine.deltaTime) * 16.0;

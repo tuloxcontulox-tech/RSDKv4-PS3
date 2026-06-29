@@ -129,7 +129,8 @@ void PauseMenu_Create(void *objPtr)
     self->label->scale  = 0.2;
     self->label->alpha  = 0;
     self->label->fontID = FONT_HEADING;
-    SetStringToFont(self->label->text, strPause, FONT_HEADING);
+    if (strPause)
+        SetStringToFont(self->label->text, strPause, FONT_HEADING);
     self->label->alignOffset = 512.0;
     self->renderRot          = DegreesToRad(22.5);
     MatrixRotateYF(&self->label->renderMatrix, DegreesToRad(22.5));

@@ -701,7 +701,7 @@ void RetroEngine::Init()
                     else {
                         SetGlobalVariableByName("options.saveSlot", startSave);
                         SetGlobalVariableByName("options.gameMode", 1);
-                        int slot = (startSave - 1) << 3;
+                        int slot = (startSave - 1);
 
                         SetGlobalVariableByName("options.stageSelectFlag", false);
                         SetGlobalVariableByName("player.lives", saveGame->files[slot].lives);
@@ -714,14 +714,17 @@ void RetroEngine::Init()
                         SetGlobalVariableByName("starPostID", 0); // For S2
                         SetGlobalVariableByName("options.vsMode", 0);
 
-                        int nextStage = saveGame->files[slot].stageID;
+                        int nextStage      = saveGame->files[slot].stageID;
+                        int specialStageID = saveGame->files[slot].specialStageID;
+                        int characterID    = saveGame->files[slot].characterID;
+
                         if (nextStage >= 0x80) {
                             SetGlobalVariableByName("specialStage.nextZone", nextStage - 0x81);
-                            InitStartingStage(STAGELIST_SPECIAL, saveGame->files[slot].specialStageID, saveGame->files[slot].characterID);
+                            InitStartingStage(STAGELIST_SPECIAL, specialStageID, characterID);
                         }
                         else if (nextStage >= 1) {
                             SetGlobalVariableByName("specialStage.nextZone", nextStage - 1);
-                            InitStartingStage(STAGELIST_REGULAR, nextStage - 1, saveGame->files[slot].characterID);
+                            InitStartingStage(STAGELIST_REGULAR, nextStage - 1, characterID);
                         }
                         else {
                             saveGame->files[slot].characterID    = 0;
@@ -731,7 +734,6 @@ void RetroEngine::Init()
                             saveGame->files[slot].stageID        = 0;
                             saveGame->files[slot].emeralds       = 0;
                             saveGame->files[slot].specialStageID = 0;
-                            saveGame->files[slot].unused         = 0;
 
                             SetGlobalVariableByName("specialStage.nextZone", 0);
                             InitStartingStage(STAGELIST_REGULAR, 0, 0);
@@ -744,16 +746,6 @@ void RetroEngine::Init()
         }
     }
 
-#if !RETRO_USE_ORIGINAL_CODE
-    gameType = GAME_SONIC2;
-#if RETRO_USE_MOD_LOADER
-    if (strstr(gameWindowText, "Sonic 1") || forceSonic1) {
-#else
-    if (strstr(gameWindowText, "Sonic 1")) {
-#endif
-        gameType = GAME_SONIC1;
-    }
-#endif
 
 #if !RETRO_USE_ORIGINAL_CODE
     bool skipStore = skipStartMenu;
@@ -1421,6 +1413,13 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
         FileRead(&fileBuffer, 1);
         FileRead(gameWindowText, fileBuffer);
         gameWindowText[fileBuffer] = 0;
+
+        if (strstr(gameWindowText, "Sonic CD"))
+            gameType = GAME_SONICCD;
+        else if (strstr(gameWindowText, "Sonic 1"))
+            gameType = GAME_SONIC1;
+        else if (strstr(gameWindowText, "Sonic 2"))
+            gameType = GAME_SONIC2;
 
         FileRead(&fileBuffer, 1);
         FileRead(gameDescriptionText, fileBuffer);

@@ -42,7 +42,7 @@ extern ushort *strNSExitMessage;
 extern ushort *strExitGame;
 extern ushort *strNetworkMessage;
 extern ushort *strStageList[16];
-extern ushort *strSaveStageList[32];
+extern ushort *strSaveStageList[128];
 extern ushort *strNewBestTime;
 extern ushort *strRecords;
 extern ushort *strNextAct;
@@ -75,6 +75,7 @@ extern ushort *strHelpText5;
 extern ushort *strVersionName;
 extern ushort *strPrivacy;
 extern ushort *strTerms;
+extern ushort *strExtras;
 
 extern int stageStrCount;
 
