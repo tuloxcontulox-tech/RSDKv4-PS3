@@ -1,4 +1,5 @@
 #include "RetroEngine.hpp"
+#include "String.hpp"
 
 void ExtrasMenu_Create(void *objPtr)
 {
@@ -27,7 +28,6 @@ void ExtrasMenu_Create(void *objPtr)
     self->textureCircle = LoadTexture("Data/Game/Menu/Circle.png", TEXFMT_RGBA4444);
     self->textureExtras = LoadTexture("Data/Game/Models/Extras.png", TEXFMT_RGBA4444);
 
-    float y = 44.0f;
     const char *names[] = { "STAGE SELECT", "PRUEBA DE SONIDO", "D.A. GARDEN" };
     for (int i = 0; i < 3; ++i) {
         self->buttons[i]            = CREATE_ENTITY(SubMenuButton);
@@ -36,8 +36,6 @@ void ExtrasMenu_Create(void *objPtr)
         self->buttons[i]->scale     = 0.1;
         self->buttons[i]->textY     = -4.0;
         SetStringToFont8(self->buttons[i]->text, names[i], FONT_LABEL);
-
-        y -= 24.0f;
     }
 }
 
@@ -59,13 +57,14 @@ void ExtrasMenu_Main(void *objPtr)
             SetRenderMatrix(&self->renderMatrix);
 
             memcpy(&self->label->renderMatrix, &self->renderMatrix, sizeof(MatrixF));
-            float y = 44.0;
+
+            float angle = DegreesToRad(20.0f);
             for (int i = 0; i < 3; ++i) {
                 MatrixRotateYF(&self->buttons[i]->matrix, DegreesToRad(16.0));
-                MatrixTranslateXYZF(&self->matrixTemp, -100.0, y, 160.0);
+                MatrixTranslateXYZF(&self->matrixTemp, -104.0f + (cosf(angle) * 24.0f), sinf(angle) * 64.0f, 160.0);
                 MatrixMultiplyF(&self->buttons[i]->matrix, &self->matrixTemp);
                 MatrixMultiplyF(&self->buttons[i]->matrix, &self->renderMatrix);
-                y -= 24.0;
+                angle -= DegreesToRad(20.0f);
             }
 
             self->timer += Engine.deltaTime;
@@ -157,14 +156,16 @@ void ExtrasMenu_Main(void *objPtr)
                 if (touches > 0) {
                     self->backPressed = CheckTouchRect(128.0, -92.0, 32.0, 32.0) >= 0;
 
-                    float y = 44.0;
+                    float angle = DegreesToRad(20.0f);
                     for (int i = 0; i < 3; ++i) {
-                        if (CheckTouchRect(-40.0, y, 96.0, 12.0) >= 0) {
+                        float x = -104.0f + (cosf(angle) * 24.0f);
+                        float y = sinf(angle) * 64.0f;
+                        if (CheckTouchRect(x + 64.0f, y, 96.0, 12.0) >= 0) {
                             self->selectedButton = i;
                             for (int j = 0; j < 3; ++j) self->buttons[j]->b = 0xFF;
                             self->buttons[i]->b = 0x0;
                         }
-                        y -= 24.0;
+                        angle -= DegreesToRad(20.0f);
                     }
                 }
                 else {

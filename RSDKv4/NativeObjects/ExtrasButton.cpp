@@ -1,4 +1,5 @@
 #include "RetroEngine.hpp"
+#include "String.hpp"
 
 void ExtrasButton_Create(void *objPtr)
 {
@@ -41,11 +42,11 @@ void ExtrasButton_Main(void *objPtr)
         SetRenderBlendMode(RENDER_BLEND_NONE);
 
         self->angle -= Engine.deltaTime;
-        if (self->angle < -(M_PI * 2.0))
-            self->angle += (M_PI * 2.0);
+        if (self->angle < -M_PI_2)
+            self->angle += M_PI_2;
 
         NewRenderState();
-        MatrixRotateXYZF(&self->renderMatrix, 0.0, 0.0, self->angle);
+        MatrixRotateXYZF(&self->renderMatrix, 0.0, sinf(self->angle) * 0.5, 0.0);
         MatrixTranslateXYZF(&self->matrixTemp, self->x, self->y, self->z - 8.0);
         MatrixMultiplyF(&self->renderMatrix, &self->matrixTemp);
         SetRenderMatrix(&self->renderMatrix);
