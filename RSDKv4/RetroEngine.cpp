@@ -1231,17 +1231,32 @@ void RetroEngine::LoadXMLSoundFX(pugi::xml_document &doc)
     pugi::xml_node gameElement   = doc.child("game");
     pugi::xml_node soundsElement = gameElement.child("sounds");
     if (soundsElement) {
+        int baseSFX = GetBaseGlobalSFXCount();
         for (pugi::xml_node sfxElement = soundsElement.child("soundfx"); sfxElement; sfxElement = sfxElement.next_sibling("soundfx")) {
             const char *sfxName = sfxElement.attribute("name").as_string("unknownSFX");
             const char *sfxPath = sfxElement.attribute("path").as_string("unknownSFX.wav");
 
-            SetSfxName(sfxName, globalSFXCount);
+            if (globalSFXCount < baseSFX) {
+                SetSfxName(sfxName, globalSFXCount);
 
-            GetFileInfo(&infoStore);
-            CloseFile();
-            LoadSfx((char *)sfxPath, globalSFXCount);
-            SetFileInfo(&infoStore);
-            globalSFXCount++;
+                GetFileInfo(&infoStore);
+                CloseFile();
+                LoadSfx((char *)sfxPath, globalSFXCount);
+                SetFileInfo(&infoStore);
+                globalSFXCount++;
+            }
+            else {
+                int extraIdx = 0x80 + extraGlobalSFXCount;
+                if (extraIdx < SFX_COUNT) {
+                    SetSfxName(sfxName, extraIdx);
+
+                    GetFileInfo(&infoStore);
+                    CloseFile();
+                    LoadSfx((char *)sfxPath, extraIdx);
+                    SetFileInfo(&infoStore);
+                    extraGlobalSFXCount++;
+                }
+            }
         }
     }
 }

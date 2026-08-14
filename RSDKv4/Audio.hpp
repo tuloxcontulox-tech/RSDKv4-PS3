@@ -137,6 +137,10 @@ enum MusicStatuses {
     MUSIC_READY   = 4,
 };
 
+extern int extraGlobalSFXCount;
+
+int GetBaseGlobalSFXCount();
+
 extern int globalSFXCount;
 extern int stageSFXCount;
 
@@ -264,7 +268,7 @@ inline bool PlaySfxByName(const char *sfx, sbyte loopCnt)
     }
     buffer[pos] = 0;
 
-    for (int s = 0; s < globalSFXCount + stageSFXCount; ++s) {
+    for (int s = 0; s < SFX_COUNT; ++s) {
         if (StrComp(sfxNames[s], buffer)) {
             PlaySfx(s, loopCnt);
             return true;
@@ -283,7 +287,7 @@ inline bool StopSFXByName(const char *sfx)
     }
     buffer[pos] = 0;
 
-    for (int s = 0; s < globalSFXCount + stageSFXCount; ++s) {
+    for (int s = 0; s < SFX_COUNT; ++s) {
         if (StrComp(sfxNames[s], buffer)) {
             StopSfx(s);
             return true;
@@ -354,14 +358,12 @@ inline void ReleaseGlobalSfx()
 {
     LockAudioDevice();
     for (int i = 0; i < CHANNEL_COUNT; ++i) {
-        if (sfxChannels[i].sfxID >= 0 && sfxChannels[i].sfxID < globalSFXCount) {
-            sfxChannels[i].sfxID = -1;
-            sfxChannels[i].samplePtr = NULL;
-            sfxChannels[i].sampleLength = 0;
-        }
+        sfxChannels[i].sfxID = -1;
+        sfxChannels[i].samplePtr = NULL;
+        sfxChannels[i].sampleLength = 0;
     }
 
-    for (int i = globalSFXCount - 1; i >= 0; --i) {
+    for (int i = SFX_COUNT - 1; i >= 0; --i) {
         if (sfxList[i].loaded) {
             StrCopy(sfxList[i].name, "");
             StrCopy(sfxNames[i], "");
@@ -375,20 +377,23 @@ inline void ReleaseGlobalSfx()
     }
 
     globalSFXCount = 0;
+    extraGlobalSFXCount = 0;
     UnlockAudioDevice();
 }
 inline void ReleaseStageSfx()
 {
     LockAudioDevice();
+    int baseSFX = GetBaseGlobalSFXCount();
+    int stageEndIdx = baseSFX + stageSFXCount;
     for (int i = 0; i < CHANNEL_COUNT; ++i) {
-        if (sfxChannels[i].sfxID >= globalSFXCount) {
+        if (sfxChannels[i].sfxID >= baseSFX && sfxChannels[i].sfxID < stageEndIdx) {
             sfxChannels[i].sfxID = -1;
             sfxChannels[i].samplePtr = NULL;
             sfxChannels[i].sampleLength = 0;
         }
     }
 
-    for (int i = (stageSFXCount + globalSFXCount) - 1; i >= globalSFXCount; --i) {
+    for (int i = stageEndIdx - 1; i >= baseSFX; --i) {
         if (sfxList[i].loaded) {
             StrCopy(sfxList[i].name, "");
             StrCopy(sfxNames[i], "");

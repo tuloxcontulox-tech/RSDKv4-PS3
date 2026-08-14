@@ -613,12 +613,12 @@ void RenderScene()
             glPopMatrix();
             glMatrixMode(GL_MODELVIEW);
             glPopMatrix();
-#endif
         }
+#endif
 
 #if RETRO_USING_OPENGL
-        if (state->useFilter && cgContext) {
 #if RETRO_PLATFORM == RETRO_PS3
+        if (state->useFilter && cgContext) {
             CGprogram vProg = cgVertexProgram;
             CGprogram fProg = cgFragmentProgram;
 
@@ -711,17 +711,17 @@ void RenderScene()
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-#endif
         }
+#endif
 
         glDrawElements(GL_TRIANGLES, state->indexCount, GL_UNSIGNED_SHORT, state->indexPtr);
 
-        if (state->useFilter && cgContext) {
 #if RETRO_PLATFORM == RETRO_PS3
+        if (state->useFilter && cgContext) {
             cgGLDisableProfile(cgVertexProfile);
             cgGLDisableProfile(cgFragmentProfile);
-#endif
         }
+#endif
 #endif
     }
 

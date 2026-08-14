@@ -51,13 +51,14 @@ volatile bool abortPreload = false;
 
 PreloadScene *preloadedData = nullptr;
 
+bool preloadThreadRunning = false;
+
 #if RETRO_PLATFORM == RETRO_PS3
 // Mutex for background thread safety
 static sys_lwmutex_t preloadMutex __attribute__((aligned(16)));
 static bool preloadMutexCreated = false;
 
 sys_ppu_thread_t preloadThread;
-bool preloadThreadRunning = false;
 static bool preloadThreadNeedsJoin = false;
 
 void PreloadThreadFunc(uint64_t arg);

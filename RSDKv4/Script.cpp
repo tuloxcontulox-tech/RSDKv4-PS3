@@ -2030,9 +2030,18 @@ void ConvertFunctionText(char *text)
                 funcName[0] = '0';
                 funcName[1] = 0;
 
+                char sfxNameBuf[0x80];
+                int sfxNamePos = 0;
+                for (int i = 0; arrayStr[i]; ++i) {
+                    if (arrayStr[i] != ' ') {
+                        sfxNameBuf[sfxNamePos++] = arrayStr[i];
+                    }
+                }
+                sfxNameBuf[sfxNamePos] = 0;
+
                 int s = 0;
                 for (; s < SFX_COUNT; ++s) {
-                    if (StrComp(arrayStr, sfxNames[s])) {
+                    if (StrComp(sfxNameBuf, sfxNames[s])) {
                         funcName[0] = 0;
                         AppendIntegerToString(funcName, s);
                         break;
@@ -2338,9 +2347,18 @@ void CheckCaseNumber(char *text)
             caseValue[0] = '0';
             caseValue[1] = 0;
 
+            char sfxNameBuf[0x80];
+            int sfxNamePos = 0;
+            for (int i = 0; arrayStr[i]; ++i) {
+                if (arrayStr[i] != ' ') {
+                    sfxNameBuf[sfxNamePos++] = arrayStr[i];
+                }
+            }
+            sfxNameBuf[sfxNamePos] = 0;
+
             int s = 0;
             for (; s < SFX_COUNT; ++s) {
-                if (StrComp(arrayStr, sfxNames[s])) {
+                if (StrComp(sfxNameBuf, sfxNames[s])) {
                     caseValue[0] = 0;
                     AppendIntegerToString(caseValue, s);
                     break;
@@ -2540,9 +2558,18 @@ bool ReadSwitchCase(char *text)
                 caseValue[0] = '0';
                 caseValue[1] = 0;
 
+                char sfxNameBuf[0x80];
+                int sfxNamePos = 0;
+                for (int i = 0; arrayStr[i]; ++i) {
+                    if (arrayStr[i] != ' ') {
+                        sfxNameBuf[sfxNamePos++] = arrayStr[i];
+                    }
+                }
+                sfxNameBuf[sfxNamePos] = 0;
+
                 int s = 0;
                 for (; s < SFX_COUNT; ++s) {
-                    if (StrComp(arrayStr, sfxNames[s])) {
+                    if (StrComp(sfxNameBuf, sfxNames[s])) {
                         caseValue[0] = 0;
                         AppendIntegerToString(caseValue, s);
                         break;

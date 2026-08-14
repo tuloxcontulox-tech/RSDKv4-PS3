@@ -823,12 +823,13 @@ void LoadStageFiles(void)
 
             FileRead(&fileBuffer, 1);
             stageSFXCount = fileBuffer;
+            int baseSFX = GetBaseGlobalSFXCount();
             for (byte i = 0; i < stageSFXCount; ++i) {
                 FileRead(&fileBuffer2, 1);
                 FileRead(strBuffer, fileBuffer2);
                 strBuffer[fileBuffer2] = 0;
 
-                SetSfxName(strBuffer, i + globalSFXCount);
+                SetSfxName(strBuffer, i + baseSFX);
             }
             for (byte i = 0; i < stageSFXCount; ++i) {
                 FileRead(&fileBuffer2, 1);
@@ -836,7 +837,7 @@ void LoadStageFiles(void)
                 strBuffer[fileBuffer2] = 0;
                 GetFileInfo(&infoStore);
                 CloseFile();
-                LoadSfx(strBuffer, globalSFXCount + i);
+                LoadSfx(strBuffer, baseSFX + i);
                 SetFileInfo(&infoStore);
             }
 
