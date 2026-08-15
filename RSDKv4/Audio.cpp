@@ -1540,6 +1540,14 @@ void LoadSfx(char *filePath, byte sfxID)
 }
 void PlaySfx(int sfx, bool loop)
 {
+    int baseSFX = GetBaseGlobalSFXCount();
+    if (sfx >= baseSFX && sfx < baseSFX + extraGlobalSFXCount) {
+        int extraIdx = 0x80 + (sfx - baseSFX);
+        if (sfxList[extraIdx].loaded) {
+            sfx = extraIdx;
+        }
+    }
+
     if (sfx < 0 || sfx >= SFX_COUNT) return;
     if (!sfxList[sfx].loaded || !sfxList[sfx].buffer) return;
 
@@ -1564,6 +1572,14 @@ void PlaySfx(int sfx, bool loop)
 }
 void SetSfxAttributes(int sfx, int loopCount, sbyte pan)
 {
+    int baseSFX = GetBaseGlobalSFXCount();
+    if (sfx >= baseSFX && sfx < baseSFX + extraGlobalSFXCount) {
+        int extraIdx = 0x80 + (sfx - baseSFX);
+        if (sfxList[extraIdx].loaded) {
+            sfx = extraIdx;
+        }
+    }
+
     LockAudioDevice();
     int sfxChannel = -1;
     for (int i = 0; i < CHANNEL_COUNT; ++i) {

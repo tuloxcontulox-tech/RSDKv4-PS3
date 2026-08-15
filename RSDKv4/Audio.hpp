@@ -242,6 +242,13 @@ void LoadSfx(char *filePath, byte sfxID);
 void PlaySfx(int sfx, bool loop);
 inline void StopSfx(int sfx)
 {
+    int baseSFX = GetBaseGlobalSFXCount();
+    if (sfx >= baseSFX && sfx < baseSFX + extraGlobalSFXCount) {
+        int extraIdx = 0x80 + (sfx - baseSFX);
+        if (sfxList[extraIdx].loaded) {
+            sfx = extraIdx;
+        }
+    }
     LockAudioDevice();
     for (int i = 0; i < CHANNEL_COUNT; ++i) {
         if (sfxChannels[i].sfxID == sfx) {
