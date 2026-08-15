@@ -35,7 +35,7 @@
 
 char networkHost[64];
 char networkUsername[20] = "Player";
-RoomInfo availableRooms[16];
+RoomInfo availableRooms[10];
 int availableRoomCount = 0;
 char networkGame[7] = "SONIC2";
 int networkPort     = 30000;
