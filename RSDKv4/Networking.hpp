@@ -11,11 +11,14 @@
 struct RoomInfo {
     uint code;
     char username[20];
+    int itemMode;
+    int rounds;
+    char modName[32];
 };
 
 extern char networkHost[64];
 extern char networkUsername[20];
-extern RoomInfo availableRooms[16];
+extern RoomInfo availableRooms[10];
 extern int availableRoomCount;
 extern char networkGame[7];
 extern int networkPort;

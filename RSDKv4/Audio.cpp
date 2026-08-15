@@ -1,5 +1,20 @@
 #include "RetroEngine.hpp"
 #include <cmath>
+#if RETRO_PLATFORM != RETRO_PS3
+#include <malloc.h>
+#endif
+
+int extraGlobalSFXCount = 0;
+int baseGlobalSFXCount  = 0;
+
+int GetBaseGlobalSFXCount()
+{
+    if (Engine.gameType == GAME_SONIC1)
+        return 40;
+    if (Engine.gameType == GAME_SONIC2)
+        return 27;
+    return baseGlobalSFXCount > 0 ? baseGlobalSFXCount : 40;
+}
 
 int globalSFXCount = 0;
 int stageSFXCount  = 0;
@@ -214,23 +229,50 @@ void LoadGlobalSfx()
 
         // Read SFX
         FileRead(&fileBuffer, 1);
-        globalSFXCount = fileBuffer;
-        for (byte s = 0; s < globalSFXCount; ++s) { // SFX Names
+        int totalSFXCount = fileBuffer;
+        if (baseGlobalSFXCount == 0 && totalSFXCount > 0)
+            baseGlobalSFXCount = totalSFXCount;
+
+        int baseSFX = GetBaseGlobalSFXCount();
+        globalSFXCount = 0;
+        extraGlobalSFXCount = 0;
+
+        char sfxNamesTemp[SFX_COUNT][0x40];
+        char sfxPathsTemp[SFX_COUNT][0x80];
+
+        for (int s = 0; s < totalSFXCount; ++s) { // SFX Names
             FileRead(&fileBuffer, 1);
             FileRead(&strBuffer, fileBuffer);
             strBuffer[fileBuffer] = 0;
-
-            SetSfxName(strBuffer, s);
+            StrCopy(sfxNamesTemp[s], strBuffer);
         }
-        for (byte s = 0; s < globalSFXCount; ++s) { // SFX Paths
+        for (int s = 0; s < totalSFXCount; ++s) { // SFX Paths
             FileRead(&fileBuffer, 1);
             FileRead(&strBuffer, fileBuffer);
             strBuffer[fileBuffer] = 0;
+            StrCopy(sfxPathsTemp[s], strBuffer);
+        }
 
-            GetFileInfo(&infoStore);
-            CloseFile();
-            LoadSfx(strBuffer, s);
-            SetFileInfo(&infoStore);
+        for (int s = 0; s < totalSFXCount; ++s) {
+            if (s < baseSFX) {
+                SetSfxName(sfxNamesTemp[s], s);
+                GetFileInfo(&infoStore);
+                CloseFile();
+                LoadSfx(sfxPathsTemp[s], s);
+                SetFileInfo(&infoStore);
+                globalSFXCount++;
+            }
+            else {
+                int extraIdx = 0x80 + extraGlobalSFXCount;
+                if (extraIdx < SFX_COUNT) {
+                    SetSfxName(sfxNamesTemp[s], extraIdx);
+                    GetFileInfo(&infoStore);
+                    CloseFile();
+                    LoadSfx(sfxPathsTemp[s], extraIdx);
+                    SetFileInfo(&infoStore);
+                    extraGlobalSFXCount++;
+                }
+            }
         }
 
         CloseFile();
@@ -977,6 +1019,8 @@ void LoadMusic_Thread(uint64_t arg) {
     musicThreadRunning = false;
     sys_ppu_thread_exit(0);
 }
+#else
+static bool musicThreadRunning = false;
 #endif
 
 bool PlayMusic(int track, int musStartPos)
@@ -1496,6 +1540,14 @@ void LoadSfx(char *filePath, byte sfxID)
 }
 void PlaySfx(int sfx, bool loop)
 {
+    int baseSFX = GetBaseGlobalSFXCount();
+    if (sfx >= baseSFX && sfx < baseSFX + extraGlobalSFXCount && !sfxList[sfx].loaded) {
+        int extraIdx = 0x80 + (sfx - baseSFX);
+        if (sfxList[extraIdx].loaded) {
+            sfx = extraIdx;
+        }
+    }
+
     if (sfx < 0 || sfx >= SFX_COUNT) return;
     if (!sfxList[sfx].loaded || !sfxList[sfx].buffer) return;
 
@@ -1520,6 +1572,14 @@ void PlaySfx(int sfx, bool loop)
 }
 void SetSfxAttributes(int sfx, int loopCount, sbyte pan)
 {
+    int baseSFX = GetBaseGlobalSFXCount();
+    if (sfx >= baseSFX && sfx < baseSFX + extraGlobalSFXCount && !sfxList[sfx].loaded) {
+        int extraIdx = 0x80 + (sfx - baseSFX);
+        if (sfxList[extraIdx].loaded) {
+            sfx = extraIdx;
+        }
+    }
+
     LockAudioDevice();
     int sfxChannel = -1;
     for (int i = 0; i < CHANNEL_COUNT; ++i) {

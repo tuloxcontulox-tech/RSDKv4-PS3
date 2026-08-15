@@ -35,7 +35,7 @@
 
 char networkHost[64];
 char networkUsername[20] = "Player";
-RoomInfo availableRooms[16];
+RoomInfo availableRooms[10];
 int availableRoomCount = 0;
 char networkGame[7] = "SONIC2";
 int networkPort     = 30000;
@@ -1244,6 +1244,7 @@ void InitNetwork()
 #endif
 }
 
+#if RETRO_PLATFORM == RETRO_PS3
 void networkLoop(uint64_t arg)
 {
     if (session) {
@@ -1375,3 +1376,4 @@ int GetNetworkCode()
 }
 
 void SetNetworkGameName(int *a1, const char *name) { StrCopy(networkGame, name); }
+#endif

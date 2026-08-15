@@ -587,8 +587,9 @@ void RenderScene()
             }
         }
 
+#if RETRO_PLATFORM != RETRO_PS3
         if (state->useFilter && mixFiltersOnJekyll) {
-#if RETRO_USING_OPENGL && RETRO_PLATFORM != RETRO_PS3
+#if RETRO_USING_OPENGL
             glGetIntegerv(GL_FRAMEBUFFER_BINDING, &defaultFramebuffer);
             glBindFramebuffer(GL_FRAMEBUFFER, framebufferHiRes);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, Engine.scalingMode ? GL_LINEAR : GL_NEAREST);
@@ -613,12 +614,13 @@ void RenderScene()
             glPopMatrix();
             glMatrixMode(GL_MODELVIEW);
             glPopMatrix();
-#endif
         }
+#endif
+#endif
 
 #if RETRO_USING_OPENGL
-        if (state->useFilter && cgContext) {
 #if RETRO_PLATFORM == RETRO_PS3
+        if (state->useFilter && cgContext) {
             CGprogram vProg = cgVertexProgram;
             CGprogram fProg = cgFragmentProgram;
 
@@ -711,17 +713,17 @@ void RenderScene()
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-#endif
         }
+#endif
 
         glDrawElements(GL_TRIANGLES, state->indexCount, GL_UNSIGNED_SHORT, state->indexPtr);
 
-        if (state->useFilter && cgContext) {
 #if RETRO_PLATFORM == RETRO_PS3
+        if (state->useFilter && cgContext) {
             cgGLDisableProfile(cgVertexProfile);
             cgGLDisableProfile(cgFragmentProfile);
-#endif
         }
+#endif
 #endif
     }
 
