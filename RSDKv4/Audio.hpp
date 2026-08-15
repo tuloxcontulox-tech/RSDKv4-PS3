@@ -243,7 +243,7 @@ void PlaySfx(int sfx, bool loop);
 inline void StopSfx(int sfx)
 {
     int baseSFX = GetBaseGlobalSFXCount();
-    if (sfx >= baseSFX && sfx < baseSFX + extraGlobalSFXCount) {
+    if (sfx >= baseSFX && sfx < baseSFX + extraGlobalSFXCount && !sfxList[sfx].loaded) {
         int extraIdx = 0x80 + (sfx - baseSFX);
         if (sfxList[extraIdx].loaded) {
             sfx = extraIdx;

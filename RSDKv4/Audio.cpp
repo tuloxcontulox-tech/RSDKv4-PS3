@@ -1541,7 +1541,7 @@ void LoadSfx(char *filePath, byte sfxID)
 void PlaySfx(int sfx, bool loop)
 {
     int baseSFX = GetBaseGlobalSFXCount();
-    if (sfx >= baseSFX && sfx < baseSFX + extraGlobalSFXCount) {
+    if (sfx >= baseSFX && sfx < baseSFX + extraGlobalSFXCount && !sfxList[sfx].loaded) {
         int extraIdx = 0x80 + (sfx - baseSFX);
         if (sfxList[extraIdx].loaded) {
             sfx = extraIdx;
@@ -1573,7 +1573,7 @@ void PlaySfx(int sfx, bool loop)
 void SetSfxAttributes(int sfx, int loopCount, sbyte pan)
 {
     int baseSFX = GetBaseGlobalSFXCount();
-    if (sfx >= baseSFX && sfx < baseSFX + extraGlobalSFXCount) {
+    if (sfx >= baseSFX && sfx < baseSFX + extraGlobalSFXCount && !sfxList[sfx].loaded) {
         int extraIdx = 0x80 + (sfx - baseSFX);
         if (sfxList[extraIdx].loaded) {
             sfx = extraIdx;
