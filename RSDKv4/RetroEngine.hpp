@@ -377,6 +377,7 @@ extern bool engineDebugMode;
 #include "Debug.hpp"
 #include "ModAPI.hpp"
 
+#include "VideoPlayer.hpp"
 #include "Audio.hpp"
 
 // Native Entities

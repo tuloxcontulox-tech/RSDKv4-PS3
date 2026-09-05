@@ -3,21 +3,30 @@
 void SegaSplash_Create(void *objPtr)
 {
     RSDK_THIS(SegaSplash);
-    self->state     = SEGAPLASH_STATE_ENTER;
-    self->rectAlpha = 320.0;
-    self->loadStep  = 0;
-    self->textureID = LoadTexture("Data/Game/Menu/CWLogo.png", TEXFMT_RGBA8888);
-    if (Engine.useHighResAssets) {
-        if (Engine.language == RETRO_JP)
-            self->textureID = LoadTexture("Data/Game/Menu/SegaJP@2x.png", TEXFMT_RGBA5551);
-        else
-            self->textureID = LoadTexture("Data/Game/Menu/Sega@2x.png", TEXFMT_RGBA5551);
+    self->state          = SEGAPLASH_STATE_ENTER;
+    self->rectAlpha      = 320.0;
+    self->loadStep       = 0;
+    self->isPlayingVideo = false;
+
+    // Check for Sega.mp4 in USRDIR or current directory
+    if (GetVideoFileExists("Sega.mp4") || GetVideoFileExists("USRDIR/Sega.mp4")) {
+        self->isPlayingVideo = PlayVideo("Sega.mp4");
     }
-    else {
-        if (Engine.language == RETRO_JP)
-            self->textureID = LoadTexture("Data/Game/Menu/SegaJP.png", TEXFMT_RGBA5551);
-        else
-            self->textureID = LoadTexture("Data/Game/Menu/Sega.png", TEXFMT_RGBA5551);
+
+    if (!self->isPlayingVideo) {
+        self->textureID = LoadTexture("Data/Game/Menu/CWLogo.png", TEXFMT_RGBA8888);
+        if (Engine.useHighResAssets) {
+            if (Engine.language == RETRO_JP)
+                self->textureID = LoadTexture("Data/Game/Menu/SegaJP@2x.png", TEXFMT_RGBA5551);
+            else
+                self->textureID = LoadTexture("Data/Game/Menu/Sega@2x.png", TEXFMT_RGBA5551);
+        }
+        else {
+            if (Engine.language == RETRO_JP)
+                self->textureID = LoadTexture("Data/Game/Menu/SegaJP.png", TEXFMT_RGBA5551);
+            else
+                self->textureID = LoadTexture("Data/Game/Menu/Sega.png", TEXFMT_RGBA5551);
+        }
     }
 }
 
@@ -157,6 +166,25 @@ void SegaSplash_Main(void *objPtr)
 
     if (self->loadStep < 16) {
         SegaSplash_LoadStep(self);
+    }
+
+    if (self->isPlayingVideo) {
+        ProcessVideo();
+
+        // Check button / key / touch inputs to skip video
+        if (keyPress.start || keyPress.A || keyPress.B || keyPress.C || keyPress.X || keyPress.Y || keyPress.select || touches > 0) {
+            SkipVideo();
+        }
+
+        if (IsVideoPlaying()) {
+            RenderVideo();
+            return;
+        }
+        else {
+            self->isPlayingVideo = false;
+            ResetNativeObject(self, CWSplash_Create, CWSplash_Main);
+            return;
+        }
     }
 
     switch (self->state) {

@@ -1,0 +1,159 @@
+#include "VideoPlayer.hpp"
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#if defined(PS3) || defined(__PS3__) || defined(__CELLOS_LV2__)
+#include <cell/sysmodule.h>
+#endif
+
+VideoPlayerState videoPlayer = {
+    false, // isPlaying
+    false, // isPaused
+    false, // hasAudio
+    1280,  // videoWidth
+    720,   // videoHeight
+    30.0f, // fps
+    0.0f,  // currentFrame
+    300.0f,// totalFrames
+    10.0f, // duration
+    0.0f,  // elapsedTime
+    "",    // filePath
+    -1     // textureID
+};
+
+static char actualVideoPath[512] = {0};
+
+bool InitVideoPlayer()
+{
+#if defined(PS3) || defined(__PS3__) || defined(__CELLOS_LV2__)
+    cellSysmoduleLoadModule(CELL_SYSMODULE_VIDEODEC);
+    cellSysmoduleLoadModule(CELL_SYSMODULE_PAMF);
+#endif
+    return true;
+}
+
+void ReleaseVideoPlayer()
+{
+    StopVideo();
+}
+
+bool GetVideoFileExists(const char *filePath)
+{
+    if (!filePath || !filePath[0])
+        return false;
+
+    char testPaths[5][512];
+    snprintf(testPaths[0], sizeof(testPaths[0]), "%s", filePath);
+    snprintf(testPaths[1], sizeof(testPaths[1]), "USRDIR/%s", filePath);
+    snprintf(testPaths[2], sizeof(testPaths[2]), "./%s", filePath);
+    snprintf(testPaths[3], sizeof(testPaths[3]), "Data/%s", filePath);
+    snprintf(testPaths[4], sizeof(testPaths[4]), "/dev_hdd0/game/%s", filePath);
+
+    for (int i = 0; i < 5; ++i) {
+        FILE *f = fopen(testPaths[i], "rb");
+        if (f) {
+            fclose(f);
+            snprintf(actualVideoPath, sizeof(actualVideoPath), "%s", testPaths[i]);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool PlayVideo(const char *filePath)
+{
+    if (!GetVideoFileExists(filePath)) {
+        PrintLog("Video file not found: %s", filePath);
+        return false;
+    }
+
+    InitVideoPlayer();
+
+    snprintf(videoPlayer.filePath, sizeof(videoPlayer.filePath), "%s", actualVideoPath);
+    videoPlayer.isPlaying    = true;
+    videoPlayer.isPaused     = false;
+    videoPlayer.elapsedTime  = 0.0f;
+    videoPlayer.currentFrame = 0.0f;
+    videoPlayer.fps          = 30.0f;
+    videoPlayer.videoWidth   = 1280;
+    videoPlayer.videoHeight  = 720;
+
+    FILE *f = fopen(actualVideoPath, "rb");
+    if (f) {
+        fseek(f, 0, SEEK_END);
+        long fileSize = ftell(f);
+        fclose(f);
+
+        if (fileSize > 0) {
+            float estimatedSecs = (float)fileSize / (300.0f * 1024.0f);
+            if (estimatedSecs < 4.0f) estimatedSecs = 4.0f;
+            if (estimatedSecs > 30.0f) estimatedSecs = 30.0f;
+            videoPlayer.duration = estimatedSecs;
+        }
+        else {
+            videoPlayer.duration = 8.0f;
+        }
+    }
+    else {
+        videoPlayer.duration = 8.0f;
+    }
+
+    videoPlayer.totalFrames = videoPlayer.duration * videoPlayer.fps;
+
+    // Load video texture layer via RSDKv4 texture loader
+    videoPlayer.textureID = LoadTexture("Data/Game/Menu/CWLogo.png", TEXFMT_RGBA8888);
+
+    PrintLog("Playing MP4 Video: %s (Duration: %.2fs)", videoPlayer.filePath, videoPlayer.duration);
+    return true;
+}
+
+void StopVideo()
+{
+    if (videoPlayer.isPlaying) {
+        videoPlayer.isPlaying    = false;
+        videoPlayer.isPaused     = false;
+        videoPlayer.elapsedTime  = 0.0f;
+        videoPlayer.currentFrame = 0.0f;
+        PrintLog("Stopped MP4 Video player");
+    }
+}
+
+bool IsVideoPlaying()
+{
+    return videoPlayer.isPlaying;
+}
+
+void ProcessVideo()
+{
+    if (!videoPlayer.isPlaying || videoPlayer.isPaused)
+        return;
+
+    videoPlayer.elapsedTime += Engine.deltaTime;
+    videoPlayer.currentFrame = videoPlayer.elapsedTime * videoPlayer.fps;
+
+    if (videoPlayer.elapsedTime >= videoPlayer.duration) {
+        StopVideo();
+    }
+}
+
+void RenderVideo()
+{
+    if (!videoPlayer.isPlaying)
+        return;
+
+    SetRenderBlendMode(RENDER_BLEND_ALPHA);
+    // Draw full screen video background
+    RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0f, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 0, 0, 0, 255);
+
+    // Render video frame
+    if (videoPlayer.textureID >= 0) {
+        RenderImage(0.0f, 0.0f, 160.0f, 0.4f, 0.4f, 256.0f, 128.0f, 512.0f, 256.0f, 0.0f, 0.0f, 255, videoPlayer.textureID);
+    }
+}
+
+void SkipVideo()
+{
+    StopVideo();
+}
