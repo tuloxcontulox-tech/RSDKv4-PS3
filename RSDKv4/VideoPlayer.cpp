@@ -163,9 +163,17 @@ void RenderVideo()
     // Draw full screen video background
     RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0f, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 0, 0, 0, 255);
 
-    // Render video frame
+    // Render video frame stretched to 100% full screen
     if (videoPlayer.textureID >= 0) {
-        RenderImage(0.0f, 0.0f, 160.0f, 0.4f, 0.4f, 256.0f, 128.0f, 512.0f, 256.0f, 0.0f, 0.0f, 255, videoPlayer.textureID);
+        TextureInfo *tex = &textureList[videoPlayer.textureID];
+        float sprW   = (tex->width > 0) ? (float)tex->width : 512.0f;
+        float sprH   = (tex->height > 0) ? (float)tex->height : 256.0f;
+        float scaleX = SCREEN_XSIZE_F / sprW;
+        float scaleY = SCREEN_YSIZE_F / sprH;
+        float pivotX = sprW * 0.5f;
+        float pivotY = sprH * 0.5f;
+
+        RenderImage(0.0f, 0.0f, 160.0f, scaleX, scaleY, pivotX, pivotY, sprW, sprH, 0.0f, 0.0f, 255, videoPlayer.textureID);
     }
 }
 
