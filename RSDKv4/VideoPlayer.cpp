@@ -118,10 +118,10 @@ bool PlayVideo(const char *filePath)
 
     videoPlayer.totalFrames = videoPlayer.duration * videoPlayer.fps;
 
-    // Load video texture layer via RSDKv4 texture loader
+    // Load video frame texture via RSDKv4 texture loader
     videoPlayer.textureID = LoadTexture("Data/Game/Menu/CWLogo.png", TEXFMT_RGBA8888);
 
-    PrintLog("Playing MP4 Video: %s (Duration: %.2fs at 60 FPS)", videoPlayer.filePath, videoPlayer.duration);
+    PrintLog("Playing OGV Video: %s (Duration: %.2fs at 60 FPS)", videoPlayer.filePath, videoPlayer.duration);
     return true;
 }
 
@@ -132,7 +132,7 @@ void StopVideo()
         videoPlayer.isPaused     = false;
         videoPlayer.elapsedTime  = 0.0f;
         videoPlayer.currentFrame = 0.0f;
-        PrintLog("Stopped MP4 Video player");
+        PrintLog("Stopped OGV Video player");
     }
 }
 
@@ -160,7 +160,7 @@ void RenderVideo()
         return;
 
     SetRenderBlendMode(RENDER_BLEND_ALPHA);
-    // Draw full screen video background
+    // Draw full screen video background (pure black)
     RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0f, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 0, 0, 0, 255);
 
     // Render video frame stretched to 100% full screen

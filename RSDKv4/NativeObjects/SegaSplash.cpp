@@ -8,8 +8,11 @@ void SegaSplash_Create(void *objPtr)
     self->loadStep       = 0;
     self->isPlayingVideo = false;
 
-    // Check for Sega.mp4 in USRDIR/Videos/ or USRDIR/ or relative game paths
-    if (GetVideoFileExists("Sega.mp4")) {
+    // Check for Sega.ogv or Sega.mp4 in USRDIR/Videos/ or USRDIR/ or relative game paths
+    if (GetVideoFileExists("Sega.ogv")) {
+        self->isPlayingVideo = PlayVideo("Sega.ogv");
+    }
+    else if (GetVideoFileExists("Sega.mp4")) {
         self->isPlayingVideo = PlayVideo("Sega.mp4");
     }
 
