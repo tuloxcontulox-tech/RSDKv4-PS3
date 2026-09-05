@@ -47,16 +47,26 @@ bool GetVideoFileExists(const char *filePath)
     if (!filePath || !filePath[0])
         return false;
 
-    char testPaths[7][512];
-    snprintf(testPaths[0], sizeof(testPaths[0]), "USRDIR/Videos/%s", filePath);
-    snprintf(testPaths[1], sizeof(testPaths[1]), "Videos/%s", filePath);
-    snprintf(testPaths[2], sizeof(testPaths[2]), "%s", filePath);
-    snprintf(testPaths[3], sizeof(testPaths[3]), "USRDIR/%s", filePath);
-    snprintf(testPaths[4], sizeof(testPaths[4]), "./%s", filePath);
-    snprintf(testPaths[5], sizeof(testPaths[5]), "Data/%s", filePath);
-    snprintf(testPaths[6], sizeof(testPaths[6]), "/dev_hdd0/game/%s", filePath);
+    char testPaths[12][512];
+    snprintf(testPaths[0], sizeof(testPaths[0]), "/dev_hdd0/game/S1PS32013/USRDIR/Videos/%s", filePath);
+    snprintf(testPaths[1], sizeof(testPaths[1]), "/dev_hdd0/game/S1PS32013/USRDIR/%s", filePath);
+    snprintf(testPaths[2], sizeof(testPaths[2]), "USRDIR/Videos/%s", filePath);
+    snprintf(testPaths[3], sizeof(testPaths[3]), "Videos/%s", filePath);
+#ifdef BASE_PATH
+    snprintf(testPaths[4], sizeof(testPaths[4]), BASE_PATH "Videos/%s", filePath);
+    snprintf(testPaths[5], sizeof(testPaths[5]), BASE_PATH "%s", filePath);
+#else
+    snprintf(testPaths[4], sizeof(testPaths[4]), "%s", filePath);
+    snprintf(testPaths[5], sizeof(testPaths[5]), "USRDIR/%s", filePath);
+#endif
+    snprintf(testPaths[6], sizeof(testPaths[6]), "/dev_hdd0/game/STH012013/USRDIR/Videos/%s", filePath);
+    snprintf(testPaths[7], sizeof(testPaths[7]), "/dev_hdd0/game/RSDKV4PS3/USRDIR/Videos/%s", filePath);
+    snprintf(testPaths[8], sizeof(testPaths[8]), "./%s", filePath);
+    snprintf(testPaths[9], sizeof(testPaths[9]), "Data/%s", filePath);
+    snprintf(testPaths[10], sizeof(testPaths[10]), "Data/Videos/%s", filePath);
+    snprintf(testPaths[11], sizeof(testPaths[11]), "/dev_hdd0/game/%s", filePath);
 
-    for (int i = 0; i < 7; ++i) {
+    for (int i = 0; i < 12; ++i) {
         FILE *f = fopen(testPaths[i], "rb");
         if (f) {
             fclose(f);
