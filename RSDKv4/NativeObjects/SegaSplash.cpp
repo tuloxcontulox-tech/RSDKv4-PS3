@@ -3,21 +3,33 @@
 void SegaSplash_Create(void *objPtr)
 {
     RSDK_THIS(SegaSplash);
-    self->state     = SEGAPLASH_STATE_ENTER;
-    self->rectAlpha = 320.0;
-    self->loadStep  = 0;
-    self->textureID = LoadTexture("Data/Game/Menu/CWLogo.png", TEXFMT_RGBA8888);
-    if (Engine.useHighResAssets) {
-        if (Engine.language == RETRO_JP)
-            self->textureID = LoadTexture("Data/Game/Menu/SegaJP@2x.png", TEXFMT_RGBA5551);
-        else
-            self->textureID = LoadTexture("Data/Game/Menu/Sega@2x.png", TEXFMT_RGBA5551);
+    self->state          = SEGAPLASH_STATE_ENTER;
+    self->rectAlpha      = 320.0;
+    self->loadStep       = 0;
+    self->isPlayingVideo = false;
+
+    // Check for Sega.ogv or Sega.mp4 in USRDIR/Videos/ or USRDIR/ or relative game paths
+    if (GetVideoFileExists("Sega.ogv")) {
+        self->isPlayingVideo = PlayVideo("Sega.ogv");
     }
-    else {
-        if (Engine.language == RETRO_JP)
-            self->textureID = LoadTexture("Data/Game/Menu/SegaJP.png", TEXFMT_RGBA5551);
-        else
-            self->textureID = LoadTexture("Data/Game/Menu/Sega.png", TEXFMT_RGBA5551);
+    else if (GetVideoFileExists("Sega.mp4")) {
+        self->isPlayingVideo = PlayVideo("Sega.mp4");
+    }
+
+    if (!self->isPlayingVideo) {
+        self->textureID = LoadTexture("Data/Game/Menu/CWLogo.png", TEXFMT_RGBA8888);
+        if (Engine.useHighResAssets) {
+            if (Engine.language == RETRO_JP)
+                self->textureID = LoadTexture("Data/Game/Menu/SegaJP@2x.png", TEXFMT_RGBA5551);
+            else
+                self->textureID = LoadTexture("Data/Game/Menu/Sega@2x.png", TEXFMT_RGBA5551);
+        }
+        else {
+            if (Engine.language == RETRO_JP)
+                self->textureID = LoadTexture("Data/Game/Menu/SegaJP.png", TEXFMT_RGBA5551);
+            else
+                self->textureID = LoadTexture("Data/Game/Menu/Sega.png", TEXFMT_RGBA5551);
+        }
     }
 }
 
@@ -159,6 +171,25 @@ void SegaSplash_Main(void *objPtr)
         SegaSplash_LoadStep(self);
     }
 
+    if (self->isPlayingVideo) {
+        ProcessVideo();
+
+        // Check user input to skip video
+        if (keyPress.start || keyPress.A || keyPress.B || keyPress.C || keyPress.X || keyPress.Y || keyPress.select || touches > 0) {
+            SkipVideo();
+        }
+
+        if (IsVideoPlaying()) {
+            RenderVideo();
+            return;
+        }
+        else {
+            self->isPlayingVideo = false;
+            self->state          = SEGAPLASH_STATE_VIDEO_FADE;
+            self->rectAlpha      = 0.0f;
+        }
+    }
+
     switch (self->state) {
         case SEGAPLASH_STATE_ENTER:
             self->rectAlpha -= 300.0 * Engine.deltaTime;
@@ -169,7 +200,7 @@ void SegaSplash_Main(void *objPtr)
             RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 0xFF, 0xFF, 0xFF, 0xFF);
             SetRenderBlendMode(RENDER_BLEND_ALPHA);
             RenderImage(0.0, 0.0, 160.0, 0.4, 0.4, 256.0, 128.0, 512.0, 256.0, 0.0, 0.0, 255, self->textureID);
-            RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 0, 0, 0, self->rectAlpha);
+            RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 0, 0, 0, (int)self->rectAlpha);
             break;
 
         case SEGAPLASH_STATE_EXIT:
@@ -180,7 +211,18 @@ void SegaSplash_Main(void *objPtr)
             RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 0xFF, 0xFF, 0xFF, 0xFF);
             SetRenderBlendMode(RENDER_BLEND_ALPHA);
             RenderImage(0.0, 0.0, 160.0, 0.4, 0.4, 256.0, 128.0, 512.0, 256.0, 0.0, 0.0, 255, self->textureID);
-            RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 0, 0, 0, self->rectAlpha);
+            RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 0, 0, 0, (int)self->rectAlpha);
+            break;
+
+        case SEGAPLASH_STATE_VIDEO_FADE:
+            // 1-second fade out to black (255.0 * deltaTime)
+            self->rectAlpha += 255.0f * Engine.deltaTime;
+            SetRenderBlendMode(RENDER_BLEND_ALPHA);
+            RenderRect(-SCREEN_CENTERX_F, SCREEN_CENTERY_F, 160.0f, SCREEN_XSIZE_F, SCREEN_YSIZE_F, 0, 0, 0, (int)(self->rectAlpha > 255.0f ? 255.0f : self->rectAlpha));
+
+            if (self->rectAlpha >= 255.0f) {
+                ResetNativeObject(self, CWSplash_Create, CWSplash_Main);
+            }
             break;
 
         case SEGAPLASH_STATE_SPAWNCWSPLASH: ResetNativeObject(self, CWSplash_Create, CWSplash_Main); break;

@@ -115,13 +115,13 @@ typedef unsigned int uint;
 
 #ifndef BASE_PATH
 #if defined(SONIC_1)
-#define BASE_PATH "/dev_hdd0/game/STH012013/USRDIR/"
+#define BASE_PATH "/dev_hdd0/game/S1PS32013/USRDIR/"
 #elif defined(SONIC_2)
 #define BASE_PATH "/dev_hdd0/game/STH022013/USRDIR/"
 #elif defined(BLURAY)
 #define BASE_PATH "/dev_bdvd/PS3_GAME/USRDIR/"
 #else
-#define BASE_PATH "/dev_hdd0/game/RSDKV4PS3/USRDIR/"
+#define BASE_PATH "/dev_hdd0/game/S1PS32013/USRDIR/"
 #endif
 #endif
 
@@ -377,6 +377,7 @@ extern bool engineDebugMode;
 #include "Debug.hpp"
 #include "ModAPI.hpp"
 
+#include "VideoPlayer.hpp"
 #include "Audio.hpp"
 
 // Native Entities

@@ -447,6 +447,7 @@
     <ClCompile Include="..\..\..\RSDKv4\Text.cpp" />
     <ClCompile Include="..\..\..\RSDKv4\UPnP.cpp" />
     <ClCompile Include="..\..\..\RSDKv4\Userdata.cpp" />
+    <ClCompile Include="..\..\..\RSDKv4\VideoPlayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\RSDKv4\Animation.hpp" />
@@ -479,6 +480,7 @@
     <ClInclude Include="..\..\..\RSDKv4\Text.hpp" />
     <ClInclude Include="..\..\..\RSDKv4\UPnP.hpp" />
     <ClInclude Include="..\..\..\RSDKv4\Userdata.hpp" />
+    <ClInclude Include="..\..\..\RSDKv4\VideoPlayer.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\RSDKv4\RSDKv4 Decomp Icon.ico" />
