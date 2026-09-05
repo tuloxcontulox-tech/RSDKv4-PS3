@@ -13,9 +13,9 @@ VideoPlayerState videoPlayer = {
     false, // hasAudio
     1280,  // videoWidth
     720,   // videoHeight
-    30.0f, // fps
+    60.0f, // fps (60 FPS smooth playback)
     0.0f,  // currentFrame
-    300.0f,// totalFrames
+    600.0f,// totalFrames
     10.0f, // duration
     0.0f,  // elapsedTime
     "",    // filePath
@@ -27,8 +27,12 @@ static char actualVideoPath[512] = {0};
 bool InitVideoPlayer()
 {
 #if defined(PS3) || defined(__PS3__) || defined(__CELLOS_LV2__)
+#ifdef CELL_SYSMODULE_VIDEODEC
     cellSysmoduleLoadModule(CELL_SYSMODULE_VIDEODEC);
+#endif
+#ifdef CELL_SYSMODULE_PAMF
     cellSysmoduleLoadModule(CELL_SYSMODULE_PAMF);
+#endif
 #endif
     return true;
 }
@@ -43,14 +47,16 @@ bool GetVideoFileExists(const char *filePath)
     if (!filePath || !filePath[0])
         return false;
 
-    char testPaths[5][512];
-    snprintf(testPaths[0], sizeof(testPaths[0]), "%s", filePath);
-    snprintf(testPaths[1], sizeof(testPaths[1]), "USRDIR/%s", filePath);
-    snprintf(testPaths[2], sizeof(testPaths[2]), "./%s", filePath);
-    snprintf(testPaths[3], sizeof(testPaths[3]), "Data/%s", filePath);
-    snprintf(testPaths[4], sizeof(testPaths[4]), "/dev_hdd0/game/%s", filePath);
+    char testPaths[7][512];
+    snprintf(testPaths[0], sizeof(testPaths[0]), "USRDIR/Videos/%s", filePath);
+    snprintf(testPaths[1], sizeof(testPaths[1]), "Videos/%s", filePath);
+    snprintf(testPaths[2], sizeof(testPaths[2]), "%s", filePath);
+    snprintf(testPaths[3], sizeof(testPaths[3]), "USRDIR/%s", filePath);
+    snprintf(testPaths[4], sizeof(testPaths[4]), "./%s", filePath);
+    snprintf(testPaths[5], sizeof(testPaths[5]), "Data/%s", filePath);
+    snprintf(testPaths[6], sizeof(testPaths[6]), "/dev_hdd0/game/%s", filePath);
 
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 7; ++i) {
         FILE *f = fopen(testPaths[i], "rb");
         if (f) {
             fclose(f);
@@ -76,8 +82,8 @@ bool PlayVideo(const char *filePath)
     videoPlayer.isPaused     = false;
     videoPlayer.elapsedTime  = 0.0f;
     videoPlayer.currentFrame = 0.0f;
-    videoPlayer.fps          = 30.0f;
-    videoPlayer.videoWidth   = 1280;
+    videoPlayer.fps          = 60.0f; // 60 FPS HD playback
+    videoPlayer.videoWidth   = 1280; // 720p resolution
     videoPlayer.videoHeight  = 720;
 
     FILE *f = fopen(actualVideoPath, "rb");
@@ -105,7 +111,7 @@ bool PlayVideo(const char *filePath)
     // Load video texture layer via RSDKv4 texture loader
     videoPlayer.textureID = LoadTexture("Data/Game/Menu/CWLogo.png", TEXFMT_RGBA8888);
 
-    PrintLog("Playing MP4 Video: %s (Duration: %.2fs)", videoPlayer.filePath, videoPlayer.duration);
+    PrintLog("Playing MP4 Video: %s (Duration: %.2fs at 60 FPS)", videoPlayer.filePath, videoPlayer.duration);
     return true;
 }
 
