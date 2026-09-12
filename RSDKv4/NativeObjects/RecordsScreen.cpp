@@ -527,6 +527,7 @@ void RecordsScreen_Main(void *objPtr)
                 SetGlobalVariableByName("starPostID", 0);
                 SetGlobalVariableByName("timeAttack.result", 0);
 
+                BackupNativeObjects();
                 if (self->zoneID >= 7 && Engine.gameType == GAME_SONIC1)
                     InitStartingStage(STAGELIST_SPECIAL, self->actID, 0);
                 else if (self->zoneID >= 9 && Engine.gameType == GAME_SONIC2) {
@@ -551,7 +552,6 @@ void RecordsScreen_Main(void *objPtr)
                 self->state      = RECORDSSCREEN_STATE_SHOWRESULTS;
                 self->flashTimer = 0.0;
                 self->taResultID = GetGlobalVariableID("timeAttack.result");
-                BackupNativeObjects();
                 self->state      = RECORDSSCREEN_STATE_WAITING;
                 CREATE_ENTITY(FadeScreen);
             }
