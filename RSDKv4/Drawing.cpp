@@ -2872,7 +2872,7 @@ void Draw3DFloorLayer(int layerID)
         int XPos       = layerXPos + (3 * sinValue * (layerYPos / (i << 9)) >> 2) - XBuffer * SCREEN_CENTERX;
         int YPos       = ZBuffer + (3 * cosValue * (layerYPos / (i << 9)) >> 2) - YBuffer * SCREEN_CENTERX;
         int lineBuffer = 0;
-        while (lineBuffer < GFX_LINESIZE) {
+        while (lineBuffer < SCREEN_XSIZE) {
             int tileX = XPos >> 12;
             int tileY = YPos >> 12;
             if (tileX > -1 && tileX < layerWidth && tileY > -1 && tileY < layerHeight) {
@@ -2894,6 +2894,7 @@ void Draw3DFloorLayer(int layerID)
             XPos += XBuffer;
             YPos += YBuffer;
         }
+        frameBufferPtr += (GFX_LINESIZE - SCREEN_XSIZE);
     }
 #endif
 }
@@ -2924,10 +2925,10 @@ void Draw3DSkyLayer(int layerID)
         }
         int xBuffer    = layerYPos / (i << 8) * -cosValue >> 9;
         int yBuffer    = sinValue * (layerYPos / (i << 8)) >> 9;
-        int XPos       = layerXPos + (3 * sinValue * (layerYPos / (i << 8)) >> 2) - xBuffer * GFX_LINESIZE;
-        int YPos       = layerZPos + (3 * cosValue * (layerYPos / (i << 8)) >> 2) - yBuffer * GFX_LINESIZE;
+        int XPos       = layerXPos + (3 * sinValue * (layerYPos / (i << 8)) >> 2) - xBuffer * SCREEN_CENTERX;
+        int YPos       = layerZPos + (3 * cosValue * (layerYPos / (i << 8)) >> 2) - yBuffer * SCREEN_CENTERX;
         int lineBuffer = 0;
-        while (lineBuffer < GFX_LINESIZE * 2) {
+        while (lineBuffer < SCREEN_XSIZE * 2) {
             int tileX = XPos >> 12;
             int tileY = YPos >> 12;
             if (tileX > -1 && tileX < layerWidth && tileY > -1 && tileY < layerHeight) {
@@ -2962,6 +2963,10 @@ void Draw3DSkyLayer(int layerID)
             XPos += xBuffer;
             YPos += yBuffer;
         }
+
+        frameBufferPtr += (GFX_LINESIZE - SCREEN_XSIZE);
+        if (!drawStageGFXHQ)
+            bufferPtr += (GFX_LINESIZE - SCREEN_XSIZE);
 
         if (!(i & 1))
             frameBufferPtr -= GFX_LINESIZE;
